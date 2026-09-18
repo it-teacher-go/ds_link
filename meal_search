@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5차시 · 두 번째 API — 우리 학교 급식 · 데이터 과학 송탄고</title>
+<link rel="stylesheet" href="assets/style.css?v=tb4">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+<style>
+  main{overflow-wrap:anywhere}
+  #school-finder .out{overflow-x:auto}
+  .daymap,.glossary-table{overflow-wrap:anywhere}
+  #school-finder{margin:12px 0 4px}
+  #school-finder .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  #school-finder select,#school-finder input,#school-finder button{
+    font:inherit;padding:7px 10px;border:1px solid #e0d6bb;border-radius:8px;background:#fff;color:inherit}
+  #school-finder input{flex:1 1 190px;min-width:150px}
+  #school-finder button{background:#f4b400;border-color:#e0a300;font-weight:800;cursor:pointer}
+  #school-finder button:hover{filter:brightness(.97)}
+  #school-finder .out{margin-top:10px;font-size:.92rem}
+  #school-finder table{border-collapse:collapse;width:100%;margin-top:6px}
+  #school-finder th,#school-finder td{border:1px solid #f0e2bc;padding:6px 8px;text-align:left;font-size:.9rem}
+  #school-finder th{background:#fdf8ef;font-weight:800}
+  #school-finder code{background:#fffdf6;border:1px solid #f0e2bc;border-radius:5px;padding:1px 5px}
+  #school-finder .chip,#school-finder .both{font:inherit;cursor:pointer;border:1px solid #f0e2bc;
+    border-radius:6px;background:#fffdf6;padding:3px 8px;font-size:.88rem}
+  #school-finder .chip{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700}
+  #school-finder .both{background:#fdf8ef;white-space:nowrap}
+  #school-finder .chip:hover,#school-finder .both:hover{filter:brightness(.96)}
+  #school-finder .done{background:#eef6e8;border-color:#cfe3c4}
+</style>
+</head>
+<body>
+<div class="wrap">
+<main>
+  <span class="eyebrow">Ⅱ. 데이터 준비와 분석 · 5차시</span>
+  <h1>두 번째 API — <span class="a">우리 학교 급식</span></h1>
+  
+  <ol class="steps">
+    <li><span class="st">① 아이디어 발산 — 최소 세 개</span><br>
+      <div class="callout warn">
+        <div class="h">🏫 다른 학교를 넣으려면 — 학교 코드를 찾아 확정한다</div>
+        <p>다른 학교를 불러오려면 교육청 코드와 학교 코드 두 가지가 필요합니다. AI가 제시한 학교 코드가 실제 코드와 다를 수 있으므로, 공식 응답에서 직접 확인합니다. 코드를 찾는 방법은 학교기본정보 API에 학교 이름을 넣어 조회하는 것입니다. 주소는 <code>https://open.neis.go.kr/hub/schoolInfo?Type=json&amp;SCHUL_NM=학교이름</code>이며, 줄임말은 검색되지 않아 정식 명칭이 필요하고 같은 이름이 여러 지역에 있으면 교육청 코드로 좁혀야 합니다. 확인한 코드는 프롬프트에 직접 적어 주며, 예를 들어 서울시교육청은 <code>B10</code>, 수도여자고등학교는 <code>7010090</code>, 송탄고등학교는 <code>7530480</code>입니다. 교육청 코드는 아래 표에서 확인할 수 있습니다. 학교 코드는 학교마다 다르고 수가 많아 표로 정리할 수 없습니다.</p>
+      <div class="finder" id="school-finder">
+        <div class="row">
+          <select id="sf-office" aria-label="교육청">
+            <option value="">전체</option>
+            <option value="B10">서울</option>
+            <option value="C10">부산</option>
+            <option value="D10">대구</option>
+            <option value="E10">인천</option>
+            <option value="F10">광주</option>
+            <option value="G10">대전</option>
+            <option value="H10">울산</option>
+            <option value="I10">세종</option>
+            <option value="J10" selected>경기</option>
+            <option value="K10">강원</option>
+            <option value="M10">충북</option>
+            <option value="N10">충남</option>
+            <option value="P10">전북</option>
+            <option value="Q10">전남</option>
+            <option value="R10">경북</option>
+            <option value="S10">경남</option>
+            <option value="T10">제주</option>
+          </select>
+          <input id="sf-name" type="search" placeholder="학교 이름 (정식 명칭)" value="송탄고등학교" aria-label="학교 이름">
+          <button id="sf-go" type="button">코드 찾기</button>
+        </div>
+        <div id="sf-out" class="out" role="status">교육청을 고르고 학교 이름을 넣은 뒤 <b>코드 찾기</b>를 누릅니다.</div>
+      </div>
+
+      <table class="daymap" style="margin:10px 0 0">
+        <thead><tr><th>지역</th><th>코드</th><th>지역</th><th>코드</th><th>지역</th><th>코드</th></tr></thead>
+        <tbody>
+          <tr><td>서울</td><td><code>B10</code></td><td>부산</td><td><code>C10</code></td><td>대구</td><td><code>D10</code></td></tr>
+          <tr><td>인천</td><td><code>E10</code></td><td>광주</td><td><code>F10</code></td><td>대전</td><td><code>G10</code></td></tr>
+          <tr><td>울산</td><td><code>H10</code></td><td>세종</td><td><code>I10</code></td><td>경기</td><td><code>J10</code></td></tr>
+          <tr><td>강원</td><td><code>K10</code></td><td>충북</td><td><code>M10</code></td><td>충남</td><td><code>N10</code></td></tr>
+          <tr><td>전북</td><td><code>P10</code></td><td>전남</td><td><code>Q10</code></td><td>경북</td><td><code>R10</code></td></tr>
+          <tr><td>경남</td><td><code>S10</code></td><td>제주</td><td><code>T10</code></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+      <p class="mini" style="margin:6px 0 0">코드는 알파벳 한 글자에 10을 붙인 꼴입니다. <code>L</code>과 <code>O</code>는 쓰지 않습니다.</p>
+      </div>
+    </li>
+  </ol>
+</main>
+</div>
+
+<footer class="foot">송탄고등학교 · 데이터 과학 · 학생용 교재</footer>
+<script src="assets/copy.js"></script>
+<script src="assets/check.js"></script>
+<script src="assets/quiz.js"></script>
+<script>
+// 학교 코드 검색기 — 나이스 학교기본정보 API를 브라우저에서 직접 부른다 (인증키 없이 5건까지).
+(function () {
+  var box = document.getElementById('school-finder');
+  if (!box) return;
+  var office = document.getElementById('sf-office');
+  var name = document.getElementById('sf-name');
+  var go = document.getElementById('sf-go');
+  var out = document.getElementById('sf-out');
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function copy(text, el) {
+    var done = function () {
+      var keep = el.textContent;
+      el.textContent = '복사됨';
+      el.classList.add('done');
+      setTimeout(function () { el.textContent = keep; el.classList.remove('done'); }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
+    } else {
+      fallback(text, done);
+    }
+  }
+
+  function fallback(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  function render(rows) {
+    var html = '<table><tr><th>학교</th><th>지역</th><th>교육청 코드</th><th>학교 코드</th><th></th></tr>';
+    rows.forEach(function (r) {
+      var line = r.SCHUL_NM + ': ATPT_OFCDC_SC_CODE=' + r.ATPT_OFCDC_SC_CODE +
+                 ', SD_SCHUL_CODE=' + r.SD_SCHUL_CODE;
+      html += '<tr><td>' + esc(r.SCHUL_NM) + '</td><td>' + esc(r.LCTN_SC_NM) +
+              '</td><td><button type="button" class="chip" data-copy="' + esc(r.ATPT_OFCDC_SC_CODE) + '">' +
+              esc(r.ATPT_OFCDC_SC_CODE) + '</button></td>' +
+              '<td><button type="button" class="chip" data-copy="' + esc(r.SD_SCHUL_CODE) + '">' +
+              esc(r.SD_SCHUL_CODE) + '</button></td>' +
+              '<td><button type="button" class="both" data-copy="' + esc(line) + '">둘 다 복사</button></td></tr>';
+    });
+    html += '</table><p style="margin:6px 0 0;font-size:.85rem;color:#7a7f95">' +
+            '코드를 누르면 그 값이, <b>둘 다 복사</b>를 누르면 프롬프트에 붙일 한 줄이 복사됩니다. ' +
+            '인증키 없이 부르면 한 번에 5건까지만 옵니다.</p>';
+    out.innerHTML = html;
+    Array.prototype.forEach.call(out.querySelectorAll('[data-copy]'), function (el) {
+      el.addEventListener('click', function () { copy(el.getAttribute('data-copy'), el); });
+    });
+  }
+
+  function search() {
+    var q = (name.value || '').trim();
+    if (!q) { out.textContent = '학교 이름을 넣어 주세요.'; return; }
+    out.textContent = '찾는 중…';
+    var url = 'https://open.neis.go.kr/hub/schoolInfo?Type=json&pSize=5&SCHUL_NM=' + encodeURIComponent(q);
+    if (office.value) url += '&ATPT_OFCDC_SC_CODE=' + office.value;
+    fetch(url)
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d.schoolInfo) {
+          if (!d.RESULT || d.RESULT.CODE !== "INFO-200") {
+            out.textContent = "학교 조회에 실패했습니다. " + ((d.RESULT && d.RESULT.MESSAGE) || "잠시 뒤 다시 시도해 주세요.");
+            return;
+          }
+          out.innerHTML = '그 이름의 학교를 찾지 못했습니다. 줄임말은 검색되지 않으니 ' +
+                          '<b>정식 명칭</b>으로 적어 보세요. (예: 수도여고 → 수도여자고등학교)';
+          return;
+        }
+        render(d.schoolInfo[1].row);
+      })
+      .catch(function () {
+        out.textContent = '조회에 실패했습니다. 잠시 뒤 다시 눌러 보세요.';
+      });
+  }
+
+  go.addEventListener('click', search);
+  name.addEventListener('keydown', function (e) { if (e.key === 'Enter') search(); });
+})();
+</script>
+</body>
+</html>
