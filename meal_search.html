@@ -33,57 +33,51 @@
 <body>
 <div class="wrap">
 <main>
-  <span class="eyebrow">Ⅱ. 데이터 준비와 분석 · 5차시</span>
-  <h1>두 번째 API — <span class="a">우리 학교 급식</span></h1>
-  
-  <ol class="steps">
-    <li><span class="st">① 아이디어 발산 — 최소 세 개</span><br>
-      <div class="callout warn">
-        <div class="h">🏫 다른 학교를 넣으려면 — 학교 코드를 찾아 확정한다</div>
-        <p>다른 학교를 불러오려면 교육청 코드와 학교 코드 두 가지가 필요합니다. AI가 제시한 학교 코드가 실제 코드와 다를 수 있으므로, 공식 응답에서 직접 확인합니다. 코드를 찾는 방법은 학교기본정보 API에 학교 이름을 넣어 조회하는 것입니다. 주소는 <code>https://open.neis.go.kr/hub/schoolInfo?Type=json&amp;SCHUL_NM=학교이름</code>이며, 줄임말은 검색되지 않아 정식 명칭이 필요하고 같은 이름이 여러 지역에 있으면 교육청 코드로 좁혀야 합니다. 확인한 코드는 프롬프트에 직접 적어 주며, 예를 들어 서울시교육청은 <code>B10</code>, 수도여자고등학교는 <code>7010090</code>, 송탄고등학교는 <code>7530480</code>입니다. 교육청 코드는 아래 표에서 확인할 수 있습니다. 학교 코드는 학교마다 다르고 수가 많아 표로 정리할 수 없습니다.</p>
-      <div class="finder" id="school-finder">
-        <div class="row">
-          <select id="sf-office" aria-label="교육청">
-            <option value="">전체</option>
-            <option value="B10">서울</option>
-            <option value="C10">부산</option>
-            <option value="D10">대구</option>
-            <option value="E10">인천</option>
-            <option value="F10">광주</option>
-            <option value="G10">대전</option>
-            <option value="H10">울산</option>
-            <option value="I10">세종</option>
-            <option value="J10" selected>경기</option>
-            <option value="K10">강원</option>
-            <option value="M10">충북</option>
-            <option value="N10">충남</option>
-            <option value="P10">전북</option>
-            <option value="Q10">전남</option>
-            <option value="R10">경북</option>
-            <option value="S10">경남</option>
-            <option value="T10">제주</option>
-          </select>
-          <input id="sf-name" type="search" placeholder="학교 이름 (정식 명칭)" value="송탄고등학교" aria-label="학교 이름">
-          <button id="sf-go" type="button">코드 찾기</button>
-        </div>
-        <div id="sf-out" class="out" role="status">교육청을 고르고 학교 이름을 넣은 뒤 <b>코드 찾기</b>를 누릅니다.</div>
-      </div>
+  <span class="eyebrow">Ⅱ. 데이터 준비와 분석 · 7차시</span>
+  <div class="callout warn">
+    <div class="h">🏫 다른 학교를 넣으려면 — 학교 코드를 찾아 확정한다</div>
+    <p>다른 학교를 불러오려면 교육청 코드와 학교 코드 두 가지가 필요합니다. AI가 제시한 학교 코드가 실제 코드와 다를 수 있으므로, 공식 응답에서 직접 확인합니다. 코드를 찾는 방법은 학교기본정보 API에 학교 이름을 넣어 조회하는 것입니다. 주소는 <code>https://open.neis.go.kr/hub/schoolInfo?Type=json&amp;SCHUL_NM=학교이름</code>이며, 줄임말은 검색되지 않아 정식 명칭이 필요하고 같은 이름이 여러 지역에 있으면 교육청 코드로 좁혀야 합니다. 확인한 코드는 프롬프트에 직접 적어 주며, 예를 들어 서울시교육청은 <code>B10</code>, 수도여자고등학교는 <code>7010090</code>, 송탄고등학교는 <code>7530480</code>입니다. 교육청 코드는 아래 표에서 확인할 수 있습니다. 학교 코드는 학교마다 다르고 수가 많아 표로 정리할 수 없습니다.</p>
+  <div class="finder" id="school-finder">
+    <div class="row">
+      <select id="sf-office" aria-label="교육청">
+        <option value="">전체</option>
+        <option value="B10">서울</option>
+        <option value="C10">부산</option>
+        <option value="D10">대구</option>
+        <option value="E10">인천</option>
+        <option value="F10">광주</option>
+        <option value="G10">대전</option>
+        <option value="H10">울산</option>
+        <option value="I10">세종</option>
+        <option value="J10" selected>경기</option>
+        <option value="K10">강원</option>
+        <option value="M10">충북</option>
+        <option value="N10">충남</option>
+        <option value="P10">전북</option>
+        <option value="Q10">전남</option>
+        <option value="R10">경북</option>
+        <option value="S10">경남</option>
+        <option value="T10">제주</option>
+      </select>
+      <input id="sf-name" type="search" placeholder="학교 이름 (정식 명칭)" value="송탄고등학교" aria-label="학교 이름">
+      <button id="sf-go" type="button">코드 찾기</button>
+    </div>
+    <div id="sf-out" class="out" role="status">교육청을 고르고 학교 이름을 넣은 뒤 <b>코드 찾기</b>를 누릅니다.</div>
+  </div>
 
-      <table class="daymap" style="margin:10px 0 0">
-        <thead><tr><th>지역</th><th>코드</th><th>지역</th><th>코드</th><th>지역</th><th>코드</th></tr></thead>
-        <tbody>
-          <tr><td>서울</td><td><code>B10</code></td><td>부산</td><td><code>C10</code></td><td>대구</td><td><code>D10</code></td></tr>
-          <tr><td>인천</td><td><code>E10</code></td><td>광주</td><td><code>F10</code></td><td>대전</td><td><code>G10</code></td></tr>
-          <tr><td>울산</td><td><code>H10</code></td><td>세종</td><td><code>I10</code></td><td>경기</td><td><code>J10</code></td></tr>
-          <tr><td>강원</td><td><code>K10</code></td><td>충북</td><td><code>M10</code></td><td>충남</td><td><code>N10</code></td></tr>
-          <tr><td>전북</td><td><code>P10</code></td><td>전남</td><td><code>Q10</code></td><td>경북</td><td><code>R10</code></td></tr>
-          <tr><td>경남</td><td><code>S10</code></td><td>제주</td><td><code>T10</code></td><td></td><td></td></tr>
-        </tbody>
-      </table>
-      <p class="mini" style="margin:6px 0 0">코드는 알파벳 한 글자에 10을 붙인 꼴입니다. <code>L</code>과 <code>O</code>는 쓰지 않습니다.</p>
-      </div>
-    </li>
-  </ol>
+  <table class="daymap" style="margin:10px 0 0">
+    <thead><tr><th>지역</th><th>코드</th><th>지역</th><th>코드</th><th>지역</th><th>코드</th></tr></thead>
+    <tbody>
+      <tr><td>서울</td><td><code>B10</code></td><td>부산</td><td><code>C10</code></td><td>대구</td><td><code>D10</code></td></tr>
+      <tr><td>인천</td><td><code>E10</code></td><td>광주</td><td><code>F10</code></td><td>대전</td><td><code>G10</code></td></tr>
+      <tr><td>울산</td><td><code>H10</code></td><td>세종</td><td><code>I10</code></td><td>경기</td><td><code>J10</code></td></tr>
+      <tr><td>강원</td><td><code>K10</code></td><td>충북</td><td><code>M10</code></td><td>충남</td><td><code>N10</code></td></tr>
+      <tr><td>전북</td><td><code>P10</code></td><td>전남</td><td><code>Q10</code></td><td>경북</td><td><code>R10</code></td></tr>
+      <tr><td>경남</td><td><code>S10</code></td><td>제주</td><td><code>T10</code></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+  <p class="mini" style="margin:6px 0 0">코드는 알파벳 한 글자에 10을 붙인 꼴입니다. <code>L</code>과 <code>O</code>는 쓰지 않습니다.</p>
+  </div>
 </main>
 </div>
 
