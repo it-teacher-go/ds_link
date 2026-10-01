@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script>(function () {
+    var root = document.documentElement;
+    var saved = null;
+    try { saved = localStorage.getItem('theme'); } catch (e) {}
+    var chosen = saved === 'light' || saved === 'dark';
+    var media = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+    function label() {
+        var btn = document.querySelector('[data-theme-toggle]');
+        if (btn) btn.setAttribute('aria-label', root.dataset.theme === 'dark' ? '밝은 화면으로 바꾸기' : '어두운 화면으로 바꾸기');
+    }
+    function apply(theme) {
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
+        root.style.backgroundColor = theme === 'dark' ? '#020617' : '';
+        label();
+    }
+    apply(chosen ? saved : (media && media.matches ? 'dark' : 'light'));
+    document.addEventListener('DOMContentLoaded', label);
+    if (media && media.addEventListener) {
+        media.addEventListener('change', function (e) {
+            if (!chosen) apply(e.matches ? 'dark' : 'light');
+        });
+    }
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest || !e.target.closest('[data-theme-toggle]')) return;
+        var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        chosen = true;
+        apply(next);
+        try { localStorage.setItem('theme', next); } catch (err) {}
+    });
+})();</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>통계적 회귀 분석과 기계학습 회귀 분석</title>
+  <link rel="icon" href="https://luminousky.com/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="https://luminousky.com/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/data-science-BYcWTQnW.css">
+</head>
+<body class="text-slate-900">
+
+<!-- ── Hero ── -->
+<header id="intro" class="hero-gradient text-white py-32 px-6 relative overflow-hidden"><button type="button" class="theme-toggle" data-theme-toggle aria-label="어두운 화면으로 바꾸기"><i class="fa-solid fa-moon theme-icon-moon" aria-hidden="true"></i><i class="fa-solid fa-sun theme-icon-sun" aria-hidden="true"></i></button>
+    <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+        <i class="fa-solid fa-square-root-variable absolute top-10 left-10 text-8xl transform -rotate-12"></i>
+        <i class="fa-solid fa-sitemap absolute bottom-10 right-10 text-9xl"></i>
+    </div>
+    <div class="max-w-4xl mx-auto text-center relative z-10">
+        <span class="inline-block px-4 py-1.5 bg-white/20 rounded-full font-bold mb-6 backdrop-blur-sm border border-white/30 text-base">데이터 과학</span>
+        <h1 class="text-3xl md:text-5xl font-black mb-6 leading-tight break-keep">
+            통계적 회귀 분석과 기계학습 회귀 분석
+        </h1>
+        <p class="text-lg md:text-xl opacity-90 font-medium max-w-2xl mx-auto leading-relaxed">
+            같은 데이터 앞에 <strong>두 갈래 길</strong>이 있습니다.<br>
+            식 하나를 구하는 길과 규칙을 만드는 길입니다.
+        </p>
+    </div>
+</header>
+
+<!-- ── 학습 목표 배너 ── -->
+<div class="bg-white border-b border-slate-200 px-6 py-6">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-bullseye text-indigo-600 text-lg"></i>
+            </div>
+            <div>
+                <p class="font-black text-base text-slate-500 mb-2 uppercase tracking-widest">학습 목표</p>
+                <ol class="space-y-1 text-base font-medium text-slate-800 list-decimal list-outside pl-5">
+                    <li>최소 제곱법이 수많은 직선 가운데 하나를 고르는 기준을 설명할 수 있다.</li>
+                    <li>최소 제곱법으로 단순 선형 회귀식의 기울기와 절편을 직접 구할 수 있다.</li>
+                    <li>의사결정트리와 k-최근접 이웃이 회귀 모델을 만드는 방식을 설명할 수 있다.</li>
+                    <li>같은 데이터를 두 가지 방법으로 분석해 보고 결과가 어떻게 달라지는지 비교할 수 있다.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── 네비게이션 ── -->
+<nav class="sticky-nav px-6 py-4">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md">
+                <i class="fa-solid fa-square-root-variable text-base"></i>
+            </div>
+            <span class="font-black text-xl tracking-tight text-slate-800">통계적 &middot; 기계학습 회귀</span>
+        </div>
+        <div class="hidden md:flex flex-wrap justify-end gap-x-4 gap-y-1 font-bold text-slate-500 text-base">
+            <a href="#which" class="hover:text-indigo-600 transition">좋은 선</a>
+            <a href="#lsm" class="hover:text-indigo-600 transition">최소 제곱법</a>
+            <a href="#calc" class="hover:text-indigo-600 transition">직접 계산</a>
+            <a href="#tool" class="hover:text-indigo-600 transition">스프레드시트</a>
+            <a href="#ml" class="hover:text-indigo-600 transition">기계학습</a>
+            <a href="#tree" class="hover:text-indigo-600 transition">의사결정트리</a>
+            <a href="#knn" class="hover:text-indigo-600 transition">k-최근접 이웃</a>
+            <a href="#compare" class="hover:text-indigo-600 transition">두 방법</a>
+            <a href="#summary" class="hover:text-indigo-600 transition">핵심 정리</a>
+            <a href="#quiz" class="hover:text-indigo-600 transition">퀴즈</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ── 메인 콘텐츠 ── -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-20 space-y-24">
+
+    <!-- ===== Section 1: 어떤 선이 좋은 선인가 ===== -->
+    <section id="which" class="scroll-mt-24 space-y-8">
+        <div class="text-center space-y-4">
+            <h2 class="text-3xl font-black text-slate-900">어떤 선이 가장 좋은 선일까?</h2>
+            <div class="w-20 h-1.5 bg-indigo-500 mx-auto rounded-full"></div>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto font-semibold">
+                중고 자전거 여섯 대의 데이터에 가장 잘 맞는 직선은 y = &minus;6x + 45입니다.
+                그런데 <strong>왜 하필 그 직선일까요?</strong>
+            </p>
+        </div>
+
+        <div class="section-card space-y-6">
+            <p class="text-base text-slate-700 leading-relaxed">
+                아래가 그 여섯 대의 데이터입니다.
+                점 여섯 개 사이로 직선을 그어 보라고 하면, 사람마다 조금씩 다른 선을 그을 것입니다.
+                아래 세 직선은 모두 「그럴듯해」 보입니다.
+            </p>
+
+            <div class="overflow-x-auto">
+                <table class="table-prose">
+                    <thead>
+                    <tr>
+                        <th class="w-40">사용 연수(년) x</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                        <th>5</th>
+                        <th>6</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="font-bold">거래 가격(만 원) y</td>
+                        <td>41</td>
+                        <td>30</td>
+                        <td>28</td>
+                        <td>22</td>
+                        <td>12</td>
+                        <td>11</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-base text-slate-500">수업에서 원리를 확인하려고 지어낸 값입니다.</p>
+
+            <svg viewBox="0 0 620 260" role="img" class="chart-svg"
+                 aria-label="여섯 개의 점 위로 서로 다른 기울기의 직선 세 개가 겹쳐 그려진 산점도. 어느 직선도 모든 점을 지나지 않는다.">
+                <g fill="none" stroke="#e2e8f0" stroke-width="1">
+                    <line x1="80" y1="182" x2="580" y2="182"/>
+                    <line x1="80" y1="144" x2="580" y2="144"/>
+                    <line x1="80" y1="106" x2="580" y2="106"/>
+                    <line x1="80" y1="68" x2="580" y2="68"/>
+                </g>
+                <line x1="80" y1="30" x2="80" y2="220" stroke="#94a3b8" stroke-width="1.5"/>
+                <line x1="80" y1="220" x2="590" y2="220" stroke="#94a3b8" stroke-width="1.5"/>
+                <line x1="116" y1="70" x2="544" y2="184" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="116" y1="68" x2="544" y2="205" stroke="#10b981" stroke-width="3.5" stroke-linecap="round"/>
+                <line x1="116" y1="60" x2="544" y2="197" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round"/>
+                <g fill="#e11d48" fill-opacity="0.9">
+                    <circle cx="151" cy="64" r="7"/>
+                    <circle cx="223" cy="106" r="7"/>
+                    <circle cx="294" cy="114" r="7"/>
+                    <circle cx="366" cy="136" r="7"/>
+                    <circle cx="437" cy="174" r="7"/>
+                    <circle cx="509" cy="178" r="7"/>
+                </g>
+            </svg>
+            <div class="flex flex-wrap gap-4 text-base text-slate-600">
+                <span class="flex items-center gap-2"><span class="inline-block w-5 h-1 rounded-full bg-amber-500"></span>y = &minus;5x + 42</span>
+                <span class="flex items-center gap-2"><span class="inline-block w-5 h-1 rounded-full bg-emerald-500"></span>y = &minus;6x + 43</span>
+                <span class="flex items-center gap-2"><span class="inline-block w-5 h-1 rounded-full bg-blue-700"></span>y = &minus;6x + 45</span>
+            </div>
+
+            <div class="bg-indigo-50 border border-indigo-200 border-l-4 border-l-indigo-500 rounded-2xl p-5 space-y-2">
+                <p class="font-bold text-base text-indigo-900">
+                    <i class="fa-solid fa-key mr-1"></i>모든 점을 지나는 직선은 거의 언제나 없습니다
+                </p>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    점이 두 개뿐이라면 그 둘을 지나는 직선이 딱 하나 있습니다.
+                    그러나 점이 셋만 되어도 일직선 위에 놓이는 일은 좀처럼 없고,
+                    데이터가 많아질수록 <strong>모두를 지나는 직선은 사실상 존재하지 않습니다.</strong>
+                    그러니 「모든 점을 지나는 선」을 찾는 대신
+                    <strong>「가장 좋은 선」이 무엇인지 기준을 먼저 정해야</strong> 합니다.
+                    사람마다 눈대중이 다르면 결과도 달라지니까요.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Section 2: 최소 제곱법 ===== -->
+    <section id="lsm" class="scroll-mt-24 space-y-8">
+        <div class="text-center space-y-4">
+            <h2 class="text-3xl font-black text-slate-900">벗어난 정도를 어떻게 측정하면 좋을까?</h2>
+            <div class="w-20 h-1.5 bg-indigo-500 mx-auto rounded-full"></div>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto font-semibold">
+                기준을 세우려면 먼저 얼마나 벗어났는지를 숫자로 나타내야 합니다.
+            </p>
+        </div>
+
+        <div class="section-card space-y-6">
+            <p class="text-base text-slate-700 leading-relaxed">
+                점 하나마다 실젯값과 선이 내놓은 예측값이 있습니다.
+                둘의 차이를 <strong>오차(error)</strong>라고 합니다.
+                점이 선보다 위에 있으면 오차가 양수, 아래에 있으면 음수입니다.
+            </p>
+
+            <svg viewBox="0 0 620 260" role="img" class="chart-svg"
+                 aria-label="직선 하나와 여섯 개의 점. 각 점에서 직선까지 세로 막대가 그어져 실젯값과 예측값의 차이를 보여 준다.">
+                <g fill="none" stroke="#e2e8f0" stroke-width="1">
+                    <line x1="80" y1="182" x2="580" y2="182"/>
+                    <line x1="80" y1="144" x2="580" y2="144"/>
+                    <line x1="80" y1="106" x2="580" y2="106"/>
+                    <line x1="80" y1="68" x2="580" y2="68"/>
+                </g>
+                <line x1="80" y1="30" x2="80" y2="220" stroke="#94a3b8" stroke-width="1.5"/>
+                <line x1="80" y1="220" x2="590" y2="220" stroke="#94a3b8" stroke-width="1.5"/>
+                <line x1="116" y1="60" x2="544" y2="197" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round"/>
+                <g stroke="#f43f5e" stroke-width="4" stroke-linecap="round">
+                    <line x1="151" y1="64" x2="151" y2="72"/>
+                    <line x1="223" y1="106" x2="223" y2="95"/>
+                    <line x1="294" y1="114" x2="294" y2="117"/>
+                    <line x1="366" y1="136" x2="366" y2="140"/>
+                    <line x1="437" y1="174" x2="437" y2="163"/>
+                    <line x1="509" y1="178" x2="509" y2="186"/>
+                </g>
+                <g fill="#e11d48" fill-opacity="0.9">
+                    <circle cx="151" cy="64" r="7"/>
+                    <circle cx="223" cy="106" r="7"/>
+                    <circle cx="294" cy="114" r="7"/>
+                    <circle cx="366" cy="136" r="7"/>
+                    <circle cx="437" cy="174" r="7"/>
+                    <circle cx="509" cy="178" r="7"/>
+                </g>
+            </svg>
+            <div class="flex flex-wrap gap-4 text-base text-slate-600">
+                <span class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-rose-600"></span>실젯값</span>
+                <span class="flex items-center gap-2"><span class="inline-block w-5 h-1 rounded-full bg-blue-700"></span>회귀선이 내놓는 예측값</span>
+                <span class="flex items-center gap-2"><span class="inline-block w-1.5 h-4 rounded-full bg-rose-500"></span>오차 &mdash; 둘 사이의 세로 거리</span>
+            </div>
+
+            <div class="border-t border-slate-200 pt-6 space-y-4">
+                <h3 class="text-2xl font-black text-slate-800">오차를 그냥 더해 보면</h3>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    파란 선 <strong>y = &minus;6x + 45</strong>로 여섯 점의 오차를 직접 구해 봅시다.
+                </p>
+
+                <div class="overflow-x-auto">
+                    <table class="table-prose">
+                        <thead>
+                        <tr>
+                            <th class="w-28">사용 연수 x</th>
+                            <th>실젯값 y</th>
+                            <th>예측값 &minus;6x + 45</th>
+                            <th>오차 = 실젯값 &minus; 예측값</th>
+                            <th>오차&sup2;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>41</td>
+                            <td>39</td>
+                            <td class="font-bold text-emerald-700">+2</td>
+                            <td>4</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>30</td>
+                            <td>33</td>
+                            <td class="font-bold text-rose-700">&minus;3</td>
+                            <td>9</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>28</td>
+                            <td>27</td>
+                            <td class="font-bold text-emerald-700">+1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>22</td>
+                            <td>21</td>
+                            <td class="font-bold text-emerald-700">+1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>12</td>
+                            <td>15</td>
+                            <td class="font-bold text-rose-700">&minus;3</td>
+                            <td>9</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>11</td>
+                            <td>9</td>
+                            <td class="font-bold text-emerald-700">+2</td>
+                            <td>4</td>
+                        </tr>
+                        <tr class="bg-indigo-50">
+                            <td class="font-black" colspan="3">합계</td>
+                            <td class="font-black text-indigo-900">0</td>
+                            <td class="font-black text-indigo-900">28</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-rose-50 border border-rose-200 border-l-4 border-l-rose-500 rounded-2xl p-5 space-y-2">
+                    <p class="font-bold text-base text-rose-900">
+                        <i class="fa-solid fa-circle-exclamation mr-1"></i>오차의 합이 <strong>0</strong>이 되어 버렸습니다
+                    </p>
+                    <p class="text-base text-slate-700 leading-relaxed">
+                        여섯 점 모두 선에서 벗어나 있는데도 합은 0입니다.
+                        <strong>양수와 음수가 서로 지워 버렸기</strong> 때문입니다.
+                        오차의 합을 기준으로 삼으면 <strong>엉뚱한 선도 0점을 받을 수 있으므로</strong>
+                        좋은 선을 구별할 수 없습니다.
+                    </p>
+                </div>
+
+                <p class="text-base text-slate-700 leading-relaxed">
+                    그래서 <strong>제곱해서 더합니다.</strong> 제곱하면 음수가 사라지므로 상쇄가 일어나지 않고,
+                    덤으로 <strong>크게 벗어난 점일수록 더 큰 벌점</strong>을 받게 됩니다.
+                    3만큼 벗어난 점은 1만큼 벗어난 점보다 <strong>9배</strong>의 몫을 차지합니다.
+                </p>
+
+                <div class="bg-indigo-600 rounded-2xl p-6 text-center space-y-3">
+                    <p class="text-xl md:text-2xl font-black text-white">최소 제곱법(least squares method)</p>
+                    <p class="text-base text-indigo-100 font-medium leading-relaxed">
+                        <strong class="text-white">오차 제곱의 합</strong>이 가장 작아지는 회귀식을 고르는 방법
+                    </p>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-200 pt-6 space-y-4">
+                <h3 class="text-2xl font-black text-slate-800">세 직선을 같은 기준으로 비교해 봅시다</h3>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    앞에서 그럴듯해 보였던 직선 셋을 오차 제곱합으로 비교하면 <strong>순위가 분명해집니다.</strong>
+                </p>
+                <div class="overflow-x-auto">
+                    <table class="table-prose">
+                        <thead>
+                        <tr>
+                            <th class="w-40">직선</th>
+                            <th>각 점의 오차</th>
+                            <th class="w-32">오차 제곱합</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="font-bold">y = &minus;5x + 42</td>
+                            <td>+4, &minus;2, +1, 0, &minus;5, &minus;1</td>
+                            <td class="font-bold">47</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold">y = &minus;6x + 43</td>
+                            <td>+4, &minus;1, +3, +3, &minus;1, +4</td>
+                            <td class="font-bold">52</td>
+                        </tr>
+                        <tr class="bg-indigo-50">
+                            <td class="font-black text-indigo-900">y = &minus;6x + 45</td>
+                            <td>+2, &minus;3, +1, +1, &minus;3, +2</td>
+                            <td class="font-black text-indigo-900">28 &nbsp;&larr; 가장 작다</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    눈대중 대신 <strong>숫자 하나로 우열이 분명해졌습니다.</strong>
+                    그리고 최소 제곱법이 찾아 주는 직선은
+                    <strong>이 세 개 중에서 고른 것이 아니라, 그을 수 있는 모든 직선 가운데
+                    오차 제곱합이 가장 작은 하나</strong>입니다.
+                </p>
+            </div>
+
+            <details class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                <summary class="font-bold text-base text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-chevron-right details-chevron text-indigo-500"></i>
+                    오차와 잔차는 다른 말인가요?
+                </summary>
+                <p class="text-base text-slate-700 leading-relaxed mt-4">
+                    실젯값과 예측값의 차이를 <strong>잔차(residual)</strong>라고도 부릅니다.
+                    엄밀하게는 오차와 잔차를 구별해서 쓰는 경우가 있지만,
+                    <strong>지금 단계에서는 같은 것을 가리키는 두 이름</strong>으로 알아 두면 충분합니다.
+                    최소 제곱법을 「잔차 제곱합을 최소로 만드는 방법」이라고 설명한 글을 만나도
+                    같은 이야기입니다.
+                </p>
+            </details>
+
+            <details class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                <summary class="font-bold text-base text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-chevron-right details-chevron text-indigo-500"></i>
+                    회귀 분석이 잘 통하려면 &mdash; 네 가지 가정 (이름까지 외울 필요는 없습니다)
+                </summary>
+                <div class="mt-4 space-y-3">
+                    <p class="text-base text-slate-700 leading-relaxed">
+                        최소 제곱법으로 구한 결과를 믿으려면 데이터가 몇 가지 조건을 어느 정도 갖추어야 합니다.
+                        <strong>지금은 「아무 데이터에나 직선을 그으면 되는 것은 아니다」라는 것만</strong> 알아 두세요.
+                    </p>
+                    <div class="overflow-x-auto">
+                        <table class="table-prose">
+                            <thead>
+                            <tr>
+                                <th class="w-32">가정</th>
+                                <th>뜻</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="font-bold">선형성</td>
+                                <td>독립 변수와 종속 변수의 관계가 <strong>대체로 곧게</strong> 이어져야 한다</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">독립성</td>
+                                <td>어느 점의 오차가 <strong>다른 점의 오차에 영향을 주지 않아야</strong> 한다</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">등분산성</td>
+                                <td>오차가 흩어진 정도가 <strong>구간마다 비슷해야</strong> 한다</td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">정규성</td>
+                                <td>오차가 <strong>0을 가운데 두고 좌우 대칭인 종 모양</strong>으로 퍼져 있어야 한다</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </details>
+
+            <div class="bg-sky-50 border border-sky-200
+                        border-l-4 border-l-sky-500 rounded-2xl px-6 py-5
+                        flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <span class="shrink-0 bg-sky-500 text-white font-bold text-base px-4 py-1.5 rounded-full whitespace-nowrap">
+                    <i class="fa-solid fa-circle-question mr-1"></i>스스로 확인
+                </span>
+                <p class="text-base text-sky-900 font-medium leading-relaxed">
+                    제곱 대신 <strong>절댓값</strong>을 씌워 더해도 부호는 사라집니다.
+                    그런데도 제곱을 쓰는 까닭은 무엇일까요?
+                    <strong>크게 벗어난 점 하나</strong>가 있을 때 두 방법이 그 점을 얼마나 다르게 대하는지 생각해 보세요.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Section 3: 직접 구하기 ===== -->
+    <section id="calc" class="scroll-mt-24 space-y-8">
+        <div class="text-center space-y-4">
+            <h2 class="text-3xl font-black text-slate-900">기울기와 절편을 직접 구해 봅시다</h2>
+            <div class="w-20 h-1.5 bg-indigo-500 mx-auto rounded-full"></div>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto font-semibold">
+                y = &minus;6x + 45가 정말 나오는지 손으로 확인합니다.
+            </p>
+        </div>
+
+        <div class="section-card space-y-6">
+            <p class="text-base text-slate-700 leading-relaxed">
+                수많은 직선을 하나씩 그어 보며 오차 제곱합을 비교할 수는 없습니다.
+                다행히 오차 제곱합이 가장 작아지는 지점을 수학으로 풀어 두면
+                기울기와 절편을 바로 구하는 식이 나옵니다.
+                식을 유도하는 과정은 지금 다루지 않고, 결과인 두 식을 쓰겠습니다.
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div class="bg-indigo-600 rounded-2xl p-6 text-center space-y-3">
+                    <p class="text-base font-bold text-indigo-100">① 기울기 a</p>
+                    <p class="text-lg md:text-xl font-black text-white leading-relaxed">
+                        a = <span class="whitespace-nowrap">(x &minus; x&#772;)(y &minus; y&#772;)의 합</span><br>
+                        <span class="inline-block border-t-2 border-white/70 pt-2 mt-1 whitespace-nowrap">(x &minus; x&#772;)&sup2;의 합</span>
+                    </p>
+                </div>
+                <div class="bg-emerald-600 rounded-2xl p-6 text-center space-y-3">
+                    <p class="text-base font-bold text-emerald-100">② 절편 b</p>
+                    <p class="text-2xl md:text-3xl font-black text-white leading-relaxed pt-4">
+                        b = y&#772; &minus; a &times; x&#772;
+                    </p>
+                </div>
+            </div>
+            <p class="text-base text-slate-600 leading-relaxed">
+                x&#772;(엑스 바)는 독립 변수의 평균, y&#772;(와이 바)는 종속 변수의 평균입니다.
+                순서가 중요합니다. 절편 식 안에 기울기 a가 들어 있으므로
+                <strong>기울기를 먼저 구하고, 그 값으로 절편을 구합니다.</strong>
+            </p>
+
+            <div class="border-t border-slate-200 pt-6 space-y-4">
+                <h3 class="text-2xl font-black text-slate-800">자전거 데이터에 넣어 보기</h3>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    먼저 두 평균을 구합니다.
+                    x&#772; = (1+2+3+4+5+6) &divide; 6 = <strong>3.5</strong>,
+                    y&#772; = (41+30+28+22+12+11) &divide; 6 = 144 &divide; 6 = <strong>24</strong>.
+                    이제 표를 채웁니다.
+                </p>
+
+                <div class="overflow-x-auto">
+                    <table class="table-prose">
+                        <thead>
+                        <tr>
+                            <th class="w-20">x</th>
+                            <th class="w-20">y</th>
+                            <th>x &minus; 3.5</th>
+                            <th>y &minus; 24</th>
+                            <th>둘의 곱</th>
+                            <th>(x &minus; 3.5)&sup2;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>41</td>
+                            <td>&minus;2.5</td>
+                            <td>17</td>
+                            <td>&minus;42.5</td>
+                            <td>6.25</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>30</td>
+                            <td>&minus;1.5</td>
+                            <td>6</td>
+                            <td>&minus;9</td>
+                            <td>2.25</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>28</td>
+                            <td>&minus;0.5</td>
+                            <td>4</td>
+                            <td>&minus;2</td>
+                            <td>0.25</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>22</td>
+                            <td>0.5</td>
+                            <td>&minus;2</td>
+                            <td>&minus;1</td>
+                            <td>0.25</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>12</td>
+                            <td>1.5</td>
+                            <td>&minus;12</td>
+                            <td>&minus;18</td>
+                            <td>2.25</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>11</td>
+                            <td>2.5</td>
+                            <td>&minus;13</td>
+                            <td>&minus;32.5</td>
+                            <td>6.25</td>
+                        </tr>
+                        <tr class="bg-indigo-50">
+                            <td class="font-black" colspan="4">합계</td>
+                            <td class="font-black text-indigo-900">&minus;105</td>
+                            <td class="font-black text-indigo-900">17.5</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-3">
+                    <p class="text-lg font-black text-slate-800">
+                        ① a = &minus;105 &divide; 17.5 = <span class="text-indigo-700">&minus;6</span>
+                    </p>
+                    <p class="text-lg font-black text-slate-800">
+                        ② b = 24 &minus; (&minus;6) &times; 3.5 = 24 + 21 = <span class="text-emerald-700">45</span>
+                    </p>
+                    <p class="text-base text-slate-700 leading-relaxed pt-2 border-t border-slate-200">
+                        처음에 제시한 <strong>y = &minus;6x + 45</strong>와 같습니다.
+                        <strong>이제 그 숫자가 어디에서 나왔는지 알게 되었습니다.</strong>
+                    </p>
+                </div>
+            </div>
+
+            <details class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                <summary class="font-bold text-base text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-chevron-right details-chevron text-indigo-500"></i>
+                    이 식의 위와 아래에는 이름이 있습니다
+                </summary>
+                <p class="text-base text-slate-700 leading-relaxed mt-4">
+                    기울기 식의 <strong>분자</strong>를 데이터 개수로 나누면 <strong>공분산</strong>,
+                    <strong>분모</strong>를 데이터 개수로 나누면 <strong>x의 분산</strong>이 됩니다.
+                    위아래를 같은 수로 나누므로 결과는 달라지지 않습니다.
+                    그래서 기울기를 <strong>「공분산을 x의 분산으로 나눈 값」</strong>이라고 설명하기도 합니다.
+                    <strong>공분산</strong>은 두 속성이 <strong>얼마나 함께 움직였는지</strong>를 모아 놓은 값이고,
+                    <strong>분산</strong>은 한 속성이 <strong>얼마나 넓게 흩어져 있는지</strong>를 나타내는 값입니다.
+                </p>
+            </details>
+
+            <div class="bg-sky-50 border border-sky-200
+                        border-l-4 border-l-sky-500 rounded-2xl px-6 py-5
+                        flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <span class="shrink-0 bg-sky-500 text-white font-bold text-base px-4 py-1.5 rounded-full whitespace-nowrap">
+                    <i class="fa-solid fa-circle-question mr-1"></i>스스로 확인
+                </span>
+                <p class="text-base text-sky-900 font-medium leading-relaxed">
+                    절편 식 <strong>b = y&#772; &minus; a &times; x&#772;</strong> 를 옮기면
+                    <strong>y&#772; = a &times; x&#772; + b</strong> 가 됩니다.
+                    이것은 <strong>회귀선이 반드시 지나는 점이 하나 있다</strong>는 뜻입니다. 어떤 점일까요?
+                    자전거 데이터에서 그 점의 좌표를 구해 산점도 위에 찍어 보세요.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Section 4: 스프레드시트 ===== -->
+    <section id="tool" class="scroll-mt-24 space-y-8">
+        <div class="text-center space-y-4">
+            <h2 class="text-3xl font-black text-slate-900">데이터가 100개라면 어떻게 할까?</h2>
+            <div class="w-20 h-1.5 bg-indigo-500 mx-auto rounded-full"></div>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto font-semibold">
+                손으로 표를 채우는 것은 여섯 줄까지입니다. 그다음은 <strong>프로그램</strong>에 맡깁니다.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== Section 5: 기계학습 회귀 분석 ===== -->
+    <section id="ml" class="scroll-mt-24 space-y-8">
+        <div class="text-center space-y-4">
+            <h2 class="text-3xl font-black text-slate-900">직선으로 담을 수 없는 데이터라면?</h2>
+            <div class="w-20 h-1.5 bg-indigo-500 mx-auto rounded-full"></div>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto font-semibold">
+                최소 제곱법은 직선을 긋기로 이미 정해 놓고 시작합니다.
+            </p>
+        </div>
+
+        <div class="section-card space-y-6">
+            <p class="text-base text-slate-700 leading-relaxed">
+                놀이공원의 인기 놀이기구 앞에서 시각마다 대기 시간을 측정해 보았습니다.
+                우리가 알고 싶은 것은 「<strong>오후 1시 40분쯤 가면 얼마나 기다릴까</strong>」입니다.
+            </p>
+
+            <div class="overflow-x-auto">
+                <table class="table-prose">
+                    <thead>
+                    <tr>
+                        <th class="w-28">시각</th>
+                        <th>10시</th>
+                        <th>11시</th>
+                        <th>12시</th>
+                        <th>13시</th>
+                        <th>14시</th>
+                        <th>15시</th>
+                        <th>16시</th>
+                        <th>17시</th>
+                        <th>18시</th>
+                        <th>19시</th>
+                        <th>20시</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="font-bold">대기 시간(분)</td>
+                        <td>5</td>
+                        <td>10</td>
+                        <td>15</td>
+                        <td>40</td>
+                        <td>45</td>
+                        <td>50</td>
+                        <td>45</td>
+                        <td>35</td>
+                        <td>25</td>
+                        <td>15</td>
+                        <td>5</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-base text-slate-500">수업에서 원리를 확인하려고 지어낸 값입니다.</p>
+
+            <p class="text-base text-slate-700 leading-relaxed">
+                이 데이터에 최소 제곱법을 그대로 적용하면 어떤 직선이 나올까요?
+                아래 파란 선이 그 결과입니다.
+            </p>
+
+            <svg viewBox="0 0 620 260" role="img" class="chart-svg"
+                 aria-label="개장 시각부터 폐장 시각까지의 대기 시간이 산 모양으로 올랐다가 내려가는 산점도. 그 위에 거의 수평인 직선 하나가 그어져 있어 데이터의 오르내림을 전혀 따라가지 못한다.">
+                <g fill="none" stroke="#e2e8f0" stroke-width="1">
+                    <line x1="70" y1="187" x2="595" y2="187"/>
+                    <line x1="70" y1="138" x2="595" y2="138"/>
+                    <line x1="70" y1="89" x2="595" y2="89"/>
+                    <line x1="70" y1="40" x2="595" y2="40"/>
+                </g>
+                <line x1="70" y1="30" x2="70" y2="225" stroke="#94a3b8" stroke-width="1.5"/>
+                <line x1="70" y1="225" x2="600" y2="225" stroke="#94a3b8" stroke-width="1.5"/>
+                <line x1="80" y1="140" x2="580" y2="128" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round"/>
+                <g fill="#e11d48" fill-opacity="0.9">
+                    <circle cx="80" cy="204" r="7"/>
+                    <circle cx="130" cy="187" r="7"/>
+                    <circle cx="180" cy="171" r="7"/>
+                    <circle cx="230" cy="89" r="7"/>
+                    <circle cx="280" cy="73" r="7"/>
+                    <circle cx="330" cy="56" r="7"/>
+                    <circle cx="380" cy="73" r="7"/>
+                    <circle cx="430" cy="105" r="7"/>
+                    <circle cx="480" cy="138" r="7"/>
+                    <circle cx="530" cy="171" r="7"/>
+                    <circle cx="580" cy="204" r="7"/>
+                </g>
+            </svg>
+            <div class="flex flex-wrap gap-4 text-base text-slate-600">
+                <span class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-rose-600"></span>시각(가로) &middot; 대기 시간(세로)</span>
+                <span class="flex items-center gap-2"><span class="inline-block w-5 h-1 rounded-full bg-blue-700"></span>최소 제곱법이 찾아 준 직선</span>
+            </div>
+
+            <div class="bg-rose-50 border border-rose-200 border-l-4 border-l-rose-500 rounded-2xl p-5 space-y-2">
+                <p class="font-bold text-base text-rose-900">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i>거의 평평한 직선이 나왔습니다
+                </p>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    계산이 잘못된 것이 아닙니다. 이 데이터는 <strong>올랐다가 내려가는 산 모양</strong>이라
+                    <strong>어떤 직선을 그어도 잘 맞을 수 없습니다.</strong>
+                    최소 제곱법은 「직선 중에서 가장 나은 것」을 찾아 줄 뿐,
+                    <strong>「직선을 써도 되는가」는 묻지 않습니다.</strong>
+                    그 판단은 사람의 몫입니다.
+                </p>
+            </div>
+
+            <p class="text-base text-slate-700 leading-relaxed">
+                그래서 다른 길도 필요합니다. 여기서 볼 <strong>기계학습 회귀 분석</strong>의 두 방법은
+                식의 모양을 미리 정해 놓지 않고,
+                데이터를 어떻게 나눌지 &middot; 누구를 참고할지 같은 규칙을
+                데이터로부터 직접 만듭니다.
+                여기서는 대표적인 두 가지를 봅니다.
+            </p>
+
+            <div class="bg-amber-50 border border-amber-200 border-l-4 border-l-amber-500 rounded-2xl p-5 space-y-2">
+                <p class="font-bold text-base text-amber-900">
+                    <i class="fa-solid fa-handshake mr-1"></i>「통계적」과 「기계학습」은 서로 경쟁하는 사이가 아닙니다
+                </p>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    최소 제곱법으로 구하는 선형 회귀는 <strong>기계학습 도구 안에도 그대로 들어 있습니다.</strong>
+                    여기서 둘을 나눈 기준은
+                    <strong>「모델을 하나의 함수식으로 쓰는가, 규칙의 묶음으로 두는가」</strong>일 뿐입니다.
+                    실제로 하는 일은 <strong>같은 데이터에 두 방법을 모두 적용해 보고
+                    더 잘 맞는 쪽을 고르는 것</strong>입니다.
+                    어느 한쪽이 언제나 더 좋다는 뜻이 아닙니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Section 6: 의사결정트리 ===== -->
+    <section id="tree" class="scroll-mt-24 space-y-8">
+        <div class="text-center space-y-4">
+            <h2 class="text-3xl font-black text-slate-900">구간을 나누어 평균을 답한다면?</h2>
+            <div class="w-20 h-1.5 bg-indigo-500 mx-auto rounded-full"></div>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto font-semibold">
+                <strong>의사결정트리(decision tree)</strong>는 질문을 던져 데이터를 나누어 나갑니다.
+            </p>
+        </div>
+
+        <div class="section-card space-y-6">
+            <p class="text-base text-slate-700 leading-relaxed">
+                의사결정트리는 「시각이 12시 30분보다 이른가?」 같은 질문을 던져
+                데이터를 둘로 나누고, 나뉜 쪽에서 또 질문을 던지며 내려갑니다.
+                분류에서는 맨 끝에서 범주를 답하지만,
+                회귀에서는 맨 끝에서 숫자를 답합니다.
+                그 숫자는 <strong>그 구간에 들어온 데이터들의 평균</strong>입니다.
+            </p>
+
+            <div class="bg-indigo-50 border border-indigo-200 border-l-4 border-l-indigo-500 rounded-2xl p-5 space-y-2">
+                <p class="font-bold text-base text-indigo-900">
+                    <i class="fa-solid fa-scissors mr-1"></i>어디에서 잘라야 할까요?
+                </p>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    아무 데나 자르는 것이 아닙니다. 여러 자리에서 잘라 본 뒤,
+                    <strong>자르고 나서 각 구간의 오차 제곱합이 가장 작아지는 자리</strong>를 고릅니다.
+                    최소 제곱법에서 쓴 것과 <strong>같은 잣대</strong>가 여기서도 쓰입니다.
+                    방법이 달라도 「벗어난 정도를 제곱해서 더한다」는 기준은 그대로입니다.
+                </p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-slate-800 rounded-2xl p-5 text-center">
+                    <p class="text-lg font-black text-white">시각이 12시 30분보다 이른가?</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white border-2 border-emerald-300 rounded-2xl p-5 space-y-2">
+                        <p class="font-bold text-base text-emerald-700">예 &mdash; 10시 ~ 12시</p>
+                        <p class="text-base text-slate-600">5, 10, 15분</p>
+                        <p class="text-2xl font-black text-slate-800">평균 10분</p>
+                    </div>
+                    <div class="bg-white border-2 border-amber-300 rounded-2xl p-5 space-y-2">
+                        <p class="font-bold text-base text-amber-700">아니오 &rarr; 17시 30분보다 이른가? &mdash; 예</p>
+                        <p class="text-base text-slate-600">40, 45, 50, 45, 35분</p>
+                        <p class="text-2xl font-black text-slate-800">평균 43분</p>
+                    </div>
+                    <div class="bg-white border-2 border-sky-300 rounded-2xl p-5 space-y-2">
+                        <p class="font-bold text-base text-sky-700">아니오 &rarr; 17시 30분보다 이른가? &mdash; 아니오</p>
+                        <p class="text-base text-slate-600">25, 15, 5분</p>
+                        <p class="text-2xl font-black text-slate-800">평균 15분</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-base text-slate-700 leading-relaxed">
+                이 모델이 그리는 선을 그림으로 옮기면 <strong>직선이 아니라 계단</strong>이 됩니다.
+                구간이 바뀌는 자리에서만 값이 껑충 뛰고, 구간 안에서는 어디를 물어도 같은 답이 나옵니다.
+            </p>
+
+            <svg viewBox="0 0 620 260" role="img" class="chart-svg"
+                 aria-label="같은 산점도 위에 세 개의 수평 구간으로 이루어진 계단 모양 선이 그려져 있다. 가운데 구간이 가장 높다.">
+                <g fill="none" stroke="#e2e8f0" stroke-width="1">
+                    <line x1="70" y1="187" x2="595" y2="187"/>
+                    <line x1="70" y1="138" x2="595" y2="138"/>
+                    <line x1="70" y1="89" x2="595" y2="89"/>
+                    <line x1="70" y1="40" x2="595" y2="40"/>
+                </g>
+                <line x1="70" y1="30" x2="70" y2="225" stroke="#94a3b8" stroke-width="1.5"/>
+                <line x1="70" y1="225" x2="600" y2="225" stroke="#94a3b8" stroke-width="1.5"/>
+                <g stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5">
+                    <line x1="205" y1="36" x2="205" y2="222"/>
+                    <line x1="455" y1="36" x2="455" y2="222"/>
+                </g>
+                <polyline fill="none" stroke="#7c3aed" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"
+                          points="80,187 205,187 205,80 455,80 455,172 580,172"/>
+                <g fill="#e11d48" fill-opacity="0.9">
+                    <circle cx="80" cy="204" r="7"/>
+                    <circle cx="130" cy="187" r="7"/>
+                    <circle cx="180" cy="171" r="7"/>
+                    <circle cx="230" cy="89" r="7"/>
+                    <circle cx="280" cy="73" r="7"/>
+                    <circle cx="330" cy="56" r="7"/>
+                    <circle cx="380" cy="73" r="7"/>
+                    <circle cx="430" cy="105" r="7"/>
+                    <circle cx="480" cy="138" r="7"/>
+                    <circle cx="530" cy="171" r="7"/>
+                    <circle cx="580" cy="204" r="7"/>
+                </g>
+            </svg>
+            <div class="flex flex-wrap gap-4 text-base text-slate-600">
+                <span class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-rose-600"></span>실제로 측정한 대기 시간</span>
+                <span class="flex items-center gap-2"><span class="inline-block w-5 h-1 rounded-full bg-violet-600"></span>의사결정트리가 내놓는 예측</span>
+                <span class="flex items-center gap-2"><span class="inline-block w-5 h-1 rounded-full bg-slate-400"></span>구간을 자른 자리</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 space-y-2">
+                    <p class="font-black text-lg text-emerald-900">좋아진 점</p>
+                    <p class="text-base text-slate-700 leading-relaxed">
+                        직선이 전혀 담지 못했던 <strong>오르내림</strong>을 담았습니다.
+                        13시 40분에 가면 <strong>43분</strong>쯤 기다린다고 답할 수 있고,
+                        이 답은 실제 데이터와 꽤 가깝습니다.
+                    </p>
+                </div>
+                <div class="bg-rose-50 border border-rose-200 rounded-2xl p-5 space-y-2">
+                    <p class="font-black text-lg text-rose-900">아쉬운 점</p>
+                    <p class="text-base text-slate-700 leading-relaxed">
+                        <strong>구간 안에서는 값이 전혀 변하지 않습니다.</strong>
+                        13시에 가든 17시에 가든 모두 43분이라고 답합니다.
+                        실제로는 50분이 될 때도, 40분이 될 때도 있는데 말입니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                <p class="text-base text-slate-700 leading-relaxed">
+                    <i class="fa-solid fa-lightbulb text-indigo-500 mr-1"></i>
+                    의사결정트리는 <strong>회귀 모델과 분류 모델을 모두 만들 수 있습니다.</strong>
+                    끝에서 <strong>숫자를 답하면 회귀</strong>, <strong>범주를 답하면 분류</strong>가 됩니다.
+                    구조는 같고 답의 종류만 다릅니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Section 7: k-최근접 이웃 ===== -->
+    <section id="knn" class="scroll-mt-24 space-y-8">
+        <div class="text-center space-y-4">
+            <h2 class="text-3xl font-black text-slate-900">가까운 데이터에게 물어본다면?</h2>
+            <div class="w-20 h-1.5 bg-indigo-500 mx-auto rounded-full"></div>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto font-semibold">
+                식도 만들지 않고 구간도 나누지 않는 방법이 있습니다.
+            </p>
+        </div>
+
+        <div class="section-card space-y-6">
+            <p class="text-base text-slate-700 leading-relaxed">
+                <strong>k-최근접 이웃(k-nearest neighbor, k-NN)</strong>은
+                예측하려는 지점에서 가장 가까운 k개의 데이터를 찾아
+                그 종속 변수 값들의 평균을 답으로 내놓습니다.
+                미리 만들어 두는 것이 없고, 물어볼 때마다 이웃을 찾습니다.
+            </p>
+
+            <div class="border-t border-slate-200 pt-6 space-y-4">
+                <h3 class="text-2xl font-black text-slate-800">13시 40분에 가면 얼마나 기다릴까?</h3>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+                    <p class="font-bold text-base text-slate-800">k = 3 &mdash; 가장 가까운 셋에게 묻기</p>
+                    <p class="text-base text-slate-700 leading-relaxed">
+                        13시 40분에서 가장 가까운 시각은
+                        <strong>14시</strong>(20분 차) &middot; <strong>13시</strong>(40분 차) &middot; <strong>15시</strong>(80분 차)입니다.
+                    </p>
+                    <p class="text-lg font-black text-indigo-900">
+                        (45 + 40 + 50) &divide; 3 = <span class="text-2xl">45분</span>
+                    </p>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+                    <p class="font-bold text-base text-slate-800">k = 5 &mdash; 다섯으로 늘려 보기</p>
+                    <p class="text-base text-slate-700 leading-relaxed">
+                        <strong>12시</strong>와 <strong>16시</strong>가 이웃에 새로 들어옵니다.
+                        12시의 대기 시간은 15분으로 꽤 짧습니다.
+                    </p>
+                    <p class="text-lg font-black text-indigo-900">
+                        (15 + 40 + 45 + 50 + 45) &divide; 5 = <span class="text-2xl">39분</span>
+                    </p>
+                </div>
+
+                <svg viewBox="0 0 620 260" role="img" class="chart-svg"
+                     aria-label="산점도 위에 예측하려는 지점을 가리키는 세로 점선이 있고, 그 둘레의 세 점이 굵게 강조되어 있다.">
+                    <g fill="none" stroke="#e2e8f0" stroke-width="1">
+                        <line x1="70" y1="187" x2="595" y2="187"/>
+                        <line x1="70" y1="138" x2="595" y2="138"/>
+                        <line x1="70" y1="89" x2="595" y2="89"/>
+                        <line x1="70" y1="40" x2="595" y2="40"/>
+                    </g>
+                    <line x1="70" y1="30" x2="70" y2="225" stroke="#94a3b8" stroke-width="1.5"/>
+                    <line x1="70" y1="225" x2="600" y2="225" stroke="#94a3b8" stroke-width="1.5"/>
+                    <rect x="230" y="36" width="100" height="186" fill="#818cf8" fill-opacity="0.14"/>
+                    <line x1="263" y1="36" x2="263" y2="222" stroke="#4f46e5" stroke-width="3" stroke-dasharray="8 6"/>
+                    <g fill="#e11d48" fill-opacity="0.45">
+                        <circle cx="80" cy="204" r="7"/>
+                        <circle cx="130" cy="187" r="7"/>
+                        <circle cx="180" cy="171" r="7"/>
+                        <circle cx="380" cy="73" r="7"/>
+                        <circle cx="430" cy="105" r="7"/>
+                        <circle cx="480" cy="138" r="7"/>
+                        <circle cx="530" cy="171" r="7"/>
+                        <circle cx="580" cy="204" r="7"/>
+                    </g>
+                    <g fill="#e11d48">
+                        <circle cx="230" cy="89" r="10"/>
+                        <circle cx="280" cy="73" r="10"/>
+                        <circle cx="330" cy="56" r="10"/>
+                    </g>
+                    <circle cx="263" cy="73" r="11" fill="#ffffff" stroke="#4f46e5" stroke-width="5"/>
+                </svg>
+                <div class="flex flex-wrap gap-4 text-base text-slate-600">
+                    <span class="flex items-center gap-2"><span class="inline-block w-4 h-4 rounded-full bg-rose-600"></span>이웃으로 뽑힌 세 점</span>
+                    <span class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-rose-600 opacity-40"></span>뽑히지 않은 점</span>
+                    <span class="flex items-center gap-2"><span class="inline-block w-3.5 h-3.5 rounded-full border-4 border-indigo-600 bg-white"></span>예측한 값</span>
+                </div>
+            </div>
+
+            <div class="bg-indigo-50 border border-indigo-200 border-l-4 border-l-indigo-500 rounded-2xl p-5 space-y-3">
+                <p class="font-bold text-base text-indigo-900">
+                    <i class="fa-solid fa-sliders mr-1"></i>k를 바꾸면 답이 바뀝니다
+                </p>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    같은 데이터, 같은 물음인데 <strong>45분</strong>과 <strong>39분</strong>이 나왔습니다.
+                    k는 데이터가 정해 주는 값이 아니라 <strong>우리가 골라야 하는 값</strong>입니다.
+                </p>
+                <ul class="space-y-2 text-base text-slate-700 list-disc list-outside pl-5 leading-relaxed">
+                    <li><strong>k가 너무 작으면</strong> &mdash; 바로 옆 한둘에 휘둘려
+                        <strong>튀는 값까지 그대로 따라갑니다.</strong> 이렇게 데이터의 우연한 흔들림까지
+                        외워 버리는 것을 <strong>과적합</strong>이라고 합니다.
+                    </li>
+                    <li><strong>k가 너무 크면</strong> &mdash; 멀리 있는 데이터까지 섞여
+                        <strong>차이가 뭉개집니다.</strong> 이렇게 있어야 할 특징까지 놓치는 것을
+                        <strong>과소적합</strong>이라고 합니다.
+                    </li>
+                    <li><strong>k를 데이터 개수만큼</strong> 키우면 어디를 물어도 <strong>같은 답</strong>이 나옵니다.
+                        여기서는 언제 가도 <strong>약 26분</strong>이라고 답하게 됩니다. 예측이라 부르기 어려울 것입니다.
+                    </li>
+                </ul>
+            </div>
+
+            <details class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                <summary class="font-bold text-base text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-chevron-right details-chevron text-indigo-500"></i>
+                    「가깝다」는 것을 측정하는 방법도 여러 가지입니다
+                </summary>
+                <div class="mt-4 space-y-4">
+                    <p class="text-base text-slate-700 leading-relaxed">
+                        우리 예처럼 속성이 하나(시각)뿐이면 거리를 측정하기가 쉽습니다.
+                        그러나 속성이 둘 이상이면 <strong>「가깝다」를 어떻게 측정할지 정해야</strong> 합니다.
+                    </p>
+                    <svg viewBox="0 0 400 160" role="img" class="chart-svg"
+                         aria-label="두 점 사이를 곧게 잇는 대각선 하나와, 가로세로로 꺾어 가는 계단형 경로 하나가 나란히 그려져 있다.">
+                        <g fill="none" stroke="#e2e8f0" stroke-width="1">
+                            <line x1="40" y1="40" x2="360" y2="40"/>
+                            <line x1="40" y1="80" x2="360" y2="80"/>
+                            <line x1="40" y1="120" x2="360" y2="120"/>
+                        </g>
+                        <line x1="60" y1="130" x2="180" y2="30" stroke="#1d4ed8" stroke-width="5" stroke-linecap="round"/>
+                        <polyline fill="none" stroke="#f97316" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"
+                                  points="240,130 300,130 300,80 360,80 360,30"/>
+                        <g fill="#0f172a">
+                            <circle cx="60" cy="130" r="7"/>
+                            <circle cx="180" cy="30" r="7"/>
+                            <circle cx="240" cy="130" r="7"/>
+                            <circle cx="360" cy="30" r="7"/>
+                        </g>
+                    </svg>
+                    <div class="flex flex-wrap gap-4 text-base text-slate-600">
+                        <span class="flex items-center gap-2"><span class="inline-block w-5 h-1 rounded-full bg-blue-700"></span><strong>유클리드 거리</strong> &mdash; 두 점을 곧게 이은 길이</span>
+                        <span class="flex items-center gap-2"><span class="inline-block w-5 h-1 rounded-full bg-orange-500"></span><strong>맨해튼 거리</strong> &mdash; 축을 따라 꺾어 간 길이</span>
+                    </div>
+                    <p class="text-base text-slate-700 leading-relaxed">
+                        보통은 유클리드 거리를 씁니다.
+                        또 <strong>가까운 이웃의 의견에 더 큰 몫</strong>을 주는 방법도 있습니다.
+                        <strong>이름까지 외울 필요는 없고</strong>, 거리를 측정하는 방식에 따라 결과가 달라진다는 것만 알아 두세요.
+                    </p>
+                </div>
+            </details>
+
+            <div class="bg-amber-50 border border-amber-200 border-l-4 border-l-amber-500 rounded-2xl p-5 space-y-2">
+                <p class="font-bold text-base text-amber-900">
+                    <i class="fa-solid fa-hourglass-half mr-1"></i>대가도 있습니다
+                </p>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    k-최근접 이웃은 미리 만들어 두는 식이 없어서 <strong>학습이랄 것이 거의 없습니다.</strong>
+                    대신 <strong>예측할 때마다 모든 데이터와의 거리를 다시 계산해야</strong> 합니다.
+                    데이터가 수십만 개라면 답 하나를 얻는 데도 시간이 걸립니다.
+                    <strong>일을 앞에서 하느냐 뒤에서 하느냐</strong>의 차이입니다.
+                </p>
+            </div>
+
+            <div class="bg-sky-50 border border-sky-200
+                        border-l-4 border-l-sky-500 rounded-2xl px-6 py-5
+                        flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <span class="shrink-0 bg-sky-500 text-white font-bold text-base px-4 py-1.5 rounded-full whitespace-nowrap">
+                    <i class="fa-solid fa-circle-question mr-1"></i>스스로 확인
+                </span>
+                <p class="text-base text-sky-900 font-medium leading-relaxed">
+                    k = 1로 두면 <strong>가장 가까운 하나</strong>의 값을 그대로 답으로 씁니다.
+                    이때 <strong>모든 데이터 지점에서 예측이 정확히 들어맞게</strong> 됩니다.
+                    그렇다면 k = 1이 가장 좋은 선택일까요?
+                    <strong>새로 들어온 데이터</strong>를 예측할 때 무슨 일이 벌어질지 생각해 보세요.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Section 8: 두 방법 비교 ===== -->
+    <section id="compare" class="scroll-mt-24 space-y-8">
+        <div class="text-center space-y-4">
+            <h2 class="text-3xl font-black text-slate-900">두 길은 무엇이 어떻게 다를까?</h2>
+            <div class="w-20 h-1.5 bg-indigo-500 mx-auto rounded-full"></div>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto font-semibold">
+                같은 데이터를 두고 <strong>나란히 비교해</strong> 봅시다.
+            </p>
+        </div>
+
+        <div class="section-card space-y-6">
+            <div class="overflow-x-auto">
+                <table class="table-prose">
+                    <thead>
+                    <tr>
+                        <th class="w-32">비교 항목</th>
+                        <th>통계적 회귀 분석</th>
+                        <th>기계학습 회귀 분석</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="font-bold">대표 방법</td>
+                        <td>최소 제곱법으로 구한 선형 회귀</td>
+                        <td>의사결정트리, k-최근접 이웃</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold">모델의 모습</td>
+                        <td><strong>함수식 하나.</strong> 기울기와 절편 두 숫자면 끝난다</td>
+                        <td><strong>규칙의 묶음.</strong> 나누는 기준이나 이웃을 찾는 절차로 되어 있다</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold">그린 선의 모양</td>
+                        <td>곧게 뻗은 직선</td>
+                        <td>계단(트리) 또는 들쭉날쭉한 선(k-최근접 이웃)</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold">읽어 내기</td>
+                        <td><strong>쉽다.</strong> 「1년 더 오래 탄 자전거가 6만 원 싸더라」처럼 말로 옮길 수 있다</td>
+                        <td><strong>어렵다.</strong> 대신 곧지 않은 관계를 그대로 반영한다</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold">잘 맞는 상황</td>
+                        <td>관계가 <strong>대체로 곧게</strong> 이어질 때</td>
+                        <td>오르내리거나 <strong>꺾이는</strong> 관계일 때</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold">데이터 범위 밖</td>
+                        <td>선을 늘여 답을 낸다. 그럴듯해 보이지만 <strong>근거가 없다</strong></td>
+                        <td>맨 끝 구간이나 이웃의 값을 <strong>계속 반복한다</strong></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-violet-50 border border-violet-200 border-l-4 border-l-violet-500 rounded-2xl p-5 space-y-2">
+                <p class="font-bold text-base text-violet-900">
+                    <i class="fa-solid fa-arrows-left-right-to-line mr-1"></i>「데이터 범위 밖」 줄을 눈여겨보세요
+                </p>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    자전거 직선 y = &minus;6x + 45에 사용 연수 8년을 넣으면 &minus;6 &times; 8 + 45 = &minus;3, 곧 <strong>가격이 음수</strong>(&minus;3만 원)가 나옵니다.
+                    직선은 데이터가 하나도 없는 곳까지 <strong>거침없이 뻗어 나갑니다.</strong>
+                    반면 의사결정트리와 k-최근접 이웃은 <strong>아예 밖으로 나가지 못합니다.</strong>
+                    21시를 물어도 마지막 구간의 값인 15분을 반복할 뿐입니다.
+                    <strong>어느 쪽도 데이터 밖을 정말로 아는 것은 아닙니다.</strong>
+                    틀리는 방식만 다를 뿐입니다.
+                </p>
+            </div>
+
+            <div class="bg-indigo-50 border border-indigo-200 border-l-4 border-l-indigo-500 rounded-2xl p-5 space-y-2">
+                <p class="font-bold text-base text-indigo-900">
+                    <i class="fa-solid fa-flag-checkered mr-1"></i>그래서 결론은 「둘 다 해 본다」입니다
+                </p>
+                <p class="text-base text-slate-700 leading-relaxed">
+                    표를 아무리 살펴보아도 <strong>어느 쪽이 좋은지는 데이터를 봐야 알 수 있습니다.</strong>
+                    자전거 데이터는 직선이 잘 맞았고, 놀이공원 데이터는 계단이 잘 맞았습니다.
+                    실제 분석에서는 <strong>같은 데이터에 두 방법을 모두 적용해 보고,
+                    결과를 숫자로 비교해 고릅니다.</strong>
+                    그러려면 <strong>「잘 맞는다」를 숫자로 측정하는 방법</strong>이 있어야 합니다.
+                </p>
+            </div>
+
+            <div class="bg-sky-50 border border-sky-200
+                        border-l-4 border-l-sky-500 rounded-2xl px-6 py-5
+                        flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <span class="shrink-0 bg-sky-500 text-white font-bold text-base px-4 py-1.5 rounded-full whitespace-nowrap">
+                    <i class="fa-solid fa-circle-question mr-1"></i>스스로 확인
+                </span>
+                <p class="text-base text-sky-900 font-medium leading-relaxed">
+                    중고 자전거 데이터에 <strong>의사결정트리</strong>를 적용하면 어떤 모양의 선이 나올까요?
+                    그리고 「<strong>사용 연수가 1년 더 길면 6만 원 싸다</strong>」처럼
+                    <strong>한 문장으로 요약할 수 있을까요?</strong>
+                    없다면, 그것이 왜 아쉬운 일인지 이야기해 보세요.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Section 10: 핵심 정리 ===== -->
+    <section id="summary" class="scroll-mt-24 space-y-8">
+        <div class="text-center space-y-4">
+            <h2 class="text-3xl font-black text-slate-900">핵심 정리</h2>
+            <div class="w-20 h-1.5 bg-indigo-500 mx-auto rounded-full"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="section-card border-t-4 border-sky-500">
+                <div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center text-xl mb-4">
+                    <i class="fa-solid fa-1"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-1">최소 제곱법</h3>
+                <p class="text-base font-medium text-slate-400 mb-3">least squares method</p>
+                <ul class="space-y-2 text-base text-slate-600 leading-relaxed">
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-sky-400"></i><span>오차 = <strong>실젯값 &minus; 예측값</strong></span>
+                    </li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-sky-400"></i><span>그냥 더하면 <strong>부호가 상쇄</strong>되므로 <strong>제곱해서</strong> 더한다</span>
+                    </li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-sky-400"></i><span><strong>오차 제곱합이 가장 작은</strong> 회귀식을 고른다</span>
+                    </li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-sky-400"></i><span>직선 가운데 가장 나은 것을 찾을 뿐, 직선을 써도 되는지는 묻지 않는다. 그 판단은 사람이 한다</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="section-card border-t-4 border-indigo-500">
+                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-xl mb-4">
+                    <i class="fa-solid fa-2"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-1">기울기와 절편 구하기</h3>
+                <p class="text-base font-medium text-slate-400 mb-3">통계적 수치 찾기</p>
+                <ul class="space-y-2 text-base text-slate-600 leading-relaxed">
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-indigo-400"></i><span>기울기 = <strong>(x&minus;x&#772;)(y&minus;y&#772;)의 합</strong> &divide; <strong>(x&minus;x&#772;)&sup2;의 합</strong></span>
+                    </li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-indigo-400"></i><span>절편 = <strong>y&#772; &minus; 기울기 &times; x&#772;</strong></span>
+                    </li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-indigo-400"></i><span><strong>기울기가 먼저</strong>다. 스프레드시트에서는 <span class="attr-name">SLOPE</span> &middot; <span class="attr-name">INTERCEPT</span></span>
+                    </li>
+                </ul>
+            </div>
+            <div class="section-card border-t-4 border-violet-500">
+                <div class="w-12 h-12 bg-violet-100 text-violet-600 rounded-full flex items-center justify-center text-xl mb-4">
+                    <i class="fa-solid fa-3"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-1">의사결정트리 회귀</h3>
+                <p class="text-base font-medium text-slate-400 mb-3">decision tree</p>
+                <ul class="space-y-2 text-base text-slate-600 leading-relaxed">
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-violet-400"></i><span>질문으로 <strong>구간을 나누고</strong> 각 구간의 <strong>평균</strong>을 답한다</span>
+                    </li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-violet-400"></i><span>자르는 자리는 <strong>오차 제곱합이 가장 작아지는 곳</strong></span>
+                    </li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-violet-400"></i><span>선이 <strong>계단</strong> 모양이 된다. 구간 안에서는 답이 같다</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="section-card border-t-4 border-emerald-500">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xl mb-4">
+                    <i class="fa-solid fa-4"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-1">k-최근접 이웃 회귀</h3>
+                <p class="text-base font-medium text-slate-400 mb-3">k-nearest neighbor</p>
+                <ul class="space-y-2 text-base text-slate-600 leading-relaxed">
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-emerald-400"></i><span>가장 가까운 <strong>k개</strong>의 값을 <strong>평균</strong>내어 답한다</span>
+                    </li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-emerald-400"></i><span>k가 작으면 <strong>과적합</strong>, 크면 <strong>과소적합</strong></span>
+                    </li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle bullet-dot text-emerald-400"></i><span>학습은 가볍지만 <strong>예측할 때마다 거리를 다시 측정한다</strong></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Section 11: 퀴즈 ===== -->
+    <section id="quiz" class="scroll-mt-24 space-y-8">
+        <div class="text-center space-y-4">
+            <h2 class="text-3xl font-black text-slate-900">확인 퀴즈</h2>
+            <div class="w-20 h-1.5 bg-indigo-500 mx-auto rounded-full"></div>
+            <p class="text-lg text-slate-600">배운 내용을 확인해 봅시다.</p>
+        </div>
+
+        <!-- 퀴즈 1 -->
+        <div class="section-card space-y-5">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-base shrink-0">
+                    Q1
+                </div>
+                <p class="text-lg font-bold text-slate-800 leading-relaxed">
+                    최소 제곱법에서 오차를 <strong>그냥 더하지 않고 제곱해서 더하는</strong> 가장 중요한 까닭은?
+                </p>
+            </div>
+            <div class="space-y-3" id="q1">
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, true, '자전거 데이터에서도 오차의 합이 0이 나왔습니다. 그냥 더하면 좋은 선을 구별할 수 없습니다.')">
+                    ① 양수와 음수가 서로 지워 버려 벗어난 정도가 사라지기 때문에
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '계산을 쉽게 하려는 것이 목적이 아닙니다. 양수와 음수가 서로 지워지지 않게 하려는 것입니다.')">
+                    ② 제곱하면 계산이 간단해지기 때문에
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '제곱은 오차를 없애 주지 않습니다. 벗어난 정도를 측정하는 방식을 정한 것입니다.')">
+                    ③ 제곱하면 오차가 없어지기 때문에
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '기울기가 음수인 회귀선도 얼마든지 있습니다. 자전거 모델이 그 예입니다.')">
+                    ④ 기울기가 반드시 양수여야 하기 때문에
+                </button>
+            </div>
+        </div>
+
+        <!-- 퀴즈 2 -->
+        <div class="section-card space-y-5">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-base shrink-0">
+                    Q2
+                </div>
+                <p class="text-lg font-bold text-slate-800 leading-relaxed">
+                    최소 제곱법으로 회귀식을 구할 때 <strong>순서가 정해져 있는</strong> 까닭은?
+                </p>
+            </div>
+            <div class="space-y-3" id="q2">
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, 'x의 평균과 y의 평균은 서로 기대지 않고 따로 구합니다. 순서가 정해진 것은 기울기와 절편 사이입니다.')">
+                    ① x의 평균을 먼저 구해야 y의 평균을 구할 수 있어서
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, true, '절편 식은 b = ȳ − a × x̄ 이므로 기울기 a가 먼저 있어야 합니다.')">
+                    ② 절편을 구하는 식 안에 기울기가 들어 있어서
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '기울기 식에는 절편이 들어 있지 않아 따로 구할 수 있습니다.')">
+                    ③ 기울기를 구하는 식 안에 절편이 들어 있어서
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '스프레드시트의 두 함수는 서로 독립적으로 계산됩니다. 순서와 관계가 없습니다.')">
+                    ④ 스프레드시트가 그 순서로만 계산하기 때문에
+                </button>
+            </div>
+        </div>
+
+        <!-- 퀴즈 3 -->
+        <div class="section-card space-y-5">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-base shrink-0">
+                    Q3
+                </div>
+                <p class="text-lg font-bold text-slate-800 leading-relaxed">
+                    놀이공원 대기 시간 데이터에 최소 제곱법을 적용했더니
+                    <strong>거의 평평한 직선</strong>이 나왔습니다. 이것이 뜻하는 바는?
+                </p>
+            </div>
+            <div class="space-y-3" id="q3">
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '계산은 정확했습니다. 최소 제곱법은 직선 중에서 가장 나은 것을 정확히 찾아 주었습니다.')">
+                    ① 최소 제곱법의 계산이 잘못되었다
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '데이터에는 뚜렷한 패턴이 있습니다. 다만 그 패턴이 직선 모양이 아닐 뿐입니다.')">
+                    ② 대기 시간에는 아무런 규칙도 없다
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, true, '최소 제곱법은 직선 중 가장 나은 것을 찾아 줄 뿐, 직선을 써도 되는지는 묻지 않습니다.')">
+                    ③ 이 데이터를 직선으로 담으려 한 것이 잘못이다
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '데이터가 11개뿐이어서 그런 것이 아닙니다. 100개를 모아도 산 모양이면 어떤 직선으로도 잘 맞출 수 없습니다.')">
+                    ④ 데이터의 개수가 너무 적다
+                </button>
+            </div>
+        </div>
+
+        <!-- 퀴즈 4 -->
+        <div class="section-card space-y-5">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-base shrink-0">
+                    Q4
+                </div>
+                <p class="text-lg font-bold text-slate-800 leading-relaxed">
+                    <strong>회귀</strong>에 쓰이는 의사결정트리가 <strong>맨 끝 노드에서 내놓는 값</strong>은?
+                </p>
+            </div>
+            <div class="space-y-3" id="q4">
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '범주를 답하면 회귀가 아니라 분류가 됩니다. 구조는 같지만 답의 종류가 다릅니다.')">
+                    ① 그 구간이 속한 범주의 이름
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, true, '그래서 구간 안에서는 어디를 물어도 같은 답이 나오고, 선이 계단 모양이 됩니다.')">
+                    ② 그 구간에 들어온 데이터들의 평균값
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '가장 가까운 데이터의 값을 그대로 쓰는 것은 k = 1인 k-최근접 이웃입니다.')">
+                    ③ 가장 가까운 데이터 하나의 값
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '의사결정트리는 함수식을 만들지 않습니다. 그것이 통계적 회귀 분석과 다른 점입니다.')">
+                    ④ 그 구간에서 구한 직선의 방정식
+                </button>
+            </div>
+        </div>
+
+        <!-- 퀴즈 5 -->
+        <div class="section-card space-y-5">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-base shrink-0">
+                    Q5
+                </div>
+                <p class="text-lg font-bold text-slate-800 leading-relaxed">
+                    k-최근접 이웃에서 <strong>k를 너무 크게</strong> 잡으면 어떤 일이 벌어지나?
+                </p>
+            </div>
+            <div class="space-y-3" id="q5">
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, '튀는 값까지 따라가는 과적합은 k가 너무 작을 때 일어납니다.')">
+                    ① 튀는 값 하나까지 그대로 따라가는 과적합이 일어난다
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, true, 'k를 데이터 개수만큼 키우면 어디를 물어도 전체 평균만 나옵니다.')">
+                    ② 멀리 있는 데이터까지 섞여 차이가 뭉개지는 과소적합이 일어난다
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, 'k를 바꾸면 답이 달라집니다. 13시 40분의 예측이 45분에서 39분으로 바뀐 것이 그 예입니다.')">
+                    ③ k를 아무리 바꾸어도 답은 달라지지 않는다
+                </button>
+                <button class="quiz-btn"
+                        onclick="checkAnswer(this, false, 'k를 키운다고 거리 계산이 사라지지는 않습니다. 여전히 모든 데이터와의 거리를 측정해야 합니다.')">
+                    ④ 예측할 때 거리를 측정하지 않아도 되어 빨라진다
+                </button>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    function checkAnswer(btn, isCorrect, message) {
+        const container = btn.closest('[id^="q"]');
+        const buttons = container.querySelectorAll('.quiz-btn');
+
+        buttons.forEach(b => {
+            if (!('html' in b.dataset)) b.dataset.html = b.innerHTML;
+            b.classList.add('disabled');
+        });
+
+        const mark = isCorrect ? 'fa-circle-check' : 'fa-circle-xmark';
+        btn.classList.add(isCorrect ? 'correct' : 'wrong');
+        btn.innerHTML = '<i class="fa-solid ' + mark + ' quiz-mark"></i>' + btn.dataset.html.trim();
+        showToast(message, isCorrect ? 'success' : 'error');
+
+        setTimeout(() => {
+            buttons.forEach(b => {
+                b.classList.remove('disabled', 'correct', 'wrong');
+                b.innerHTML = b.dataset.html;
+            });
+        }, 3000);
+    }
+
+    function showToast(message, type) {
+        const existing = document.getElementById('toast-msg');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'toast-msg';
+        toast.className = 'quiz-toast ' + (type === 'success' ? 'quiz-toast-ok' : 'quiz-toast-no');
+        const icon = document.createElement('i');
+        icon.className = 'fa-solid quiz-mark ' + (type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark');
+        toast.append(icon, message);
+        document.body.appendChild(toast);
+
+        requestAnimationFrame(() => toast.classList.add('quiz-toast-show'));
+
+        setTimeout(() => {
+            toast.classList.remove('quiz-toast-show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+</script>
+</body>
+</html>
