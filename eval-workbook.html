@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>평가 손계산 활동지 · 데이터 과학 송탄고</title>
+<link rel="stylesheet" href="assets/style.css?v=tb16">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✍️</text></svg>">
+<script>
+// 교사용 정답지 인쇄: 주소 끝에 ?answers=1 을 붙이면 정답 상자가 모두 펼쳐지고 인쇄에도 포함된다
+(function(){try{if(/[?&]answers=1/.test(location.search)){document.addEventListener("DOMContentLoaded",function(){document.body.classList.add("answers");document.querySelectorAll("details.key").forEach(function(d){d.open=true;});});}}catch(e){}})();
+</script>
+<style>
+  .wb h2 { font-size: 1.5rem; margin-top: 54px; border-top: 3px solid var(--accent); padding-top: 14px; }
+  .wb h2 .unit { display: block; font-size: 0.78rem; color: var(--accent); letter-spacing: 0.08em; font-weight: 800; margin-bottom: 4px; }
+  .wb h3 { font-size: 1.1rem; margin-top: 30px; }
+  .wb .step { display: inline-block; font-size: 0.74rem; font-weight: 800; color: #fff; background: var(--accent); border-radius: 999px; padding: 2px 10px; margin-right: 8px; vertical-align: 2px; }
+  .wb .step.b { background: var(--blue); } .wb .step.g { background: var(--green); } .wb .step.v { background: var(--violet); } .wb .step.t { background: var(--teal); }
+  /* 개념 카드 */
+  .wb .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 14px 0; }
+  .wb .card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; background: #fff; box-shadow: var(--shadow); border-top: 5px solid var(--accent); }
+  .wb .card.b { border-top-color: var(--blue); } .wb .card.g { border-top-color: var(--green); } .wb .card.r { border-top-color: var(--red); } .wb .card.v { border-top-color: var(--violet); } .wb .card.t { border-top-color: var(--teal); }
+  .wb .card .t1 { font-weight: 800; margin-bottom: 4px; }
+  .wb .card .f { font-family: var(--mono); font-size: 0.86rem; background: #fffaee; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; margin: 6px 0; display: inline-block; }
+  .wb .card .d { font-size: 0.88rem; color: var(--text-soft); }
+  /* 예제 풀이 */
+  .wb .ex { border: 1px solid var(--border); border-left: 5px solid var(--blue); background: var(--blue-soft); border-radius: var(--radius-sm); padding: 14px 16px; margin: 18px 0; }
+  .wb .ex .h { font-weight: 800; color: #2f6bd6; margin-bottom: 6px; }
+  .wb .ex ol.sol { margin: 8px 0 0; padding-left: 22px; }
+  .wb .ex ol.sol li { margin: 5px 0; }
+  .wb .ex .res { font-weight: 800; color: #2f6bd6; }
+  /* 연습 */
+  .wb .pr { border: 1px solid var(--border); border-left: 5px solid var(--green); background: #fff; border-radius: var(--radius-sm); padding: 14px 16px; margin: 18px 0; }
+  .wb .pr .h { font-weight: 800; color: #3d7a37; margin-bottom: 6px; }
+  .wb .pr.self { border-left-color: var(--violet); }
+  .wb .pr.self .h { color: #8a5578; }
+  .wb .pr.real { border-left-color: var(--accent); background: #fffdf6; }
+  .wb .pr.real .h { color: #b45309; }
+  /* 표 */
+  .wb table.tb { border-collapse: collapse; margin: 10px 0; font-size: 0.92rem; }
+  .wb table.tb th, .wb table.tb td { border: 1px solid var(--border); padding: 7px 11px; text-align: center; min-width: 56px; }
+  .wb table.tb th { background: #fff3d6; color: #b45309; font-weight: 800; }
+  .wb table.tb td.k, .wb table.tb th.k { text-align: left; font-weight: 800; white-space: nowrap; }
+  .wb table.tb td.blank { background: #fff; min-width: 64px; height: 30px; }
+  .wb table.tb td.ans { background: var(--green-soft); font-weight: 700; }
+  .wb table.cm { border-collapse: collapse; margin: 10px auto; }
+  .wb table.cm th, .wb table.cm td { border: 1px solid var(--border); padding: 8px 14px; text-align: center; min-width: 96px; }
+  .wb table.cm th { background: #fff3d6; }
+  .wb table.cm td.tp { background: var(--green-soft); } .wb table.cm td.tn { background: var(--green-soft); }
+  .wb table.cm td.fp { background: var(--red-soft); } .wb table.cm td.fn { background: var(--red-soft); }
+  .wb .fill { display: inline-block; min-width: 72px; border-bottom: 2px solid var(--text-soft); margin: 0 4px; }
+  .wb .line { display: block; border-bottom: 1px dashed var(--border); height: 26px; }
+  /* 정답 접기 */
+  .wb details.key { margin-top: 10px; border: 1px dashed var(--border); border-radius: var(--radius-sm); background: #fffdf6; }
+  .wb details.key summary { cursor: pointer; padding: 8px 14px; font-size: 0.86rem; font-weight: 800; color: var(--accent); list-style: none; }
+  .wb details.key summary::-webkit-details-marker { display: none; }
+  .wb details.key summary::before { content: "▸ "; } .wb details.key[open] summary::before { content: "▾ "; }
+  .wb details.key .in { padding: 0 14px 12px; font-size: 0.9rem; color: var(--text-soft); }
+  .wb details.key .in p { margin: 6px 0; }
+  /* 다이어그램 */
+  .wb .fig { margin: 14px 0; text-align: center; }
+  .wb .fig svg { max-width: 100%; height: auto; }
+  .wb .fig .cap { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+  .wb svg text { font-family: var(--font); }
+  .wb .rule { border: 1px solid var(--border); border-left: 5px solid var(--red); background: var(--red-soft); border-radius: var(--radius-sm); padding: 12px 16px; margin: 16px 0; }
+  .wb .rule .h { font-weight: 800; color: #c23b3a; margin-bottom: 4px; }
+  .wb .ladder { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 10px 0; }
+  .wb .ladder .s { border: 1.5px solid var(--accent); background: #fff; border-radius: 8px; padding: 6px 12px; font-weight: 700; font-size: 0.88rem; }
+  .wb .ladder .a { color: var(--muted); font-weight: 800; }
+  .print-student, .print-teacher { display: none; }
+  @media print {
+    .screen-only { display: none !important; }
+    .print-student { display: inline; }
+    body.answers .print-student { display: none; }
+    body.answers .print-teacher { display: inline; }
+    @page { size: A4; margin: 15mm 14mm 16mm; }
+    body { background: #fff; font-size: 11pt; }
+    .topbar, .pager, footer.foot { display: none !important; }
+    .wrap { padding: 0; max-width: none; } main { border: none; box-shadow: none; padding: 0; }
+    .wb h2 { break-before: page; margin-top: 0; } .wb h2.first { break-before: auto; }
+    .wb h2, .wb h3 { break-after: avoid; }
+    .wb .ex, .wb .pr, .wb .card, .wb table, .wb .fig, .wb .rule, .wb .cards { break-inside: avoid; }
+    .wb details.key { display: none; }
+    body.answers .wb details.key { display: block; }
+  }
+  @media (max-width: 640px) {
+    .wb table.tb, .wb table.cm { display: block; overflow-x: auto; max-width: 100%; }
+  }
+</style>
+<link rel="stylesheet" href="assets/review.css">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main class="wb">
+  <p class="version-note">활동지 개정: 2026-09-12 · 급식 예제: 중식 184일 기록 기준</p>
+  <span class="eyebrow">중간고사 대비 · 손으로 푸는 활동지</span>
+  <h1>모델 평가 <span class="a">손계산 활동지</span></h1>
+  <div class="under"></div>
+  <p class="lead">AI가 화면에 보여 주던 점수(R², 정확도, 향상도)를 종이 위에서 직접 만들어 봅니다. 사칙연산과 나눗셈이면 충분합니다. 부마다 <b>기본 개념 → 예제(풀이 포함) → 연습 문제 → 스스로 풀기 → 수업 실측 해석</b>의 순서로 되어 있습니다. 문제를 풀다가 막히면 그 부의 개념 카드로 돌아가 분모가 무엇인지부터 확인합니다.</p>
+
+  <div class="rule">
+    <div class="h">✍️ 활동지 규칙</div>
+    <p>계산 과정을 지우지 않습니다. 과정이 곧 점수입니다. 답만 적힌 활동지는 검산할 수 없습니다. 막히면 표의 빈칸부터 채웁니다. <span class="screen-only">정답은 접힌 상자 안에 있으니, 먼저 끝까지 푼 뒤에 펼칩니다.</span><span class="print-student">문제를 푼 뒤 선생님과 답을 확인합니다.</span><span class="print-teacher">학생이 문제를 푼 뒤 인쇄된 정답과 대조합니다.</span> 4부(군집)는 수업 활동지에 없던 보충으로, 개념 이해용입니다.</p>
+  </div>
+
+  <div class="ladder">
+    <span class="s">1부 회귀 평가 — 오차 · MSE · R²</span><span class="a">→</span>
+    <span class="s">2부 분류 평가(언젠가?) — 혼동행렬 · 세 지표 · 기준선</span><span class="a">→</span>
+    <span class="s">3부 연관 분석(언젠가?) — 지지도 · 신뢰도 · 향상도</span><span class="a">→</span>
+    <span class="s">4부 군집 평가(언젠가?) — 거리 · 표준화 · 실루엣</span>
+  </div>
+
+  <!-- ============================================================ 1부 -->
+  <h2 id="p1" class="first"><span class="unit">1부 · 8차시</span>회귀 모델의 평가 — 오차에서 R²까지</h2>
+
+  <h3><span class="step">개념</span>네 계단</h3>
+  <div class="cards">
+    <div class="card"><div class="t1">① 오차</div><div class="f">실젯값 − 예측값</div><div class="d">이 예측은 얼마나, 어느 쪽으로 빗나갔나. 부호가 있다.</div></div>
+    <div class="card b"><div class="t1">② 부호 없애기</div><div class="f">|오차| 또는 오차²</div><div class="d">양수와 음수가 상쇄되지 않게. 절댓값의 평균이 MAE.</div></div>
+    <div class="card g"><div class="t1">③ MSE</div><div class="f">제곱오차의 합 ÷ 개수</div><div class="d">평균적으로 얼마나 빗나가나. 큰 실수 하나에 민감하다.</div></div>
+    <div class="card v"><div class="t1">④ R²</div><div class="f">1 − (SSE ÷ SST)</div><div class="d">SSE = 내 모델의 제곱오차 합, SST = 평균만 찍는 모델의 제곱오차 합. "평균보다 얼마나 나은가".</div></div>
+  </div>
+  <div class="fig">
+    <svg viewBox="0 0 640 210" width="640" height="210" role="img" aria-label="오차와 제곱오차의 그림">
+      <rect x="0" y="0" width="640" height="210" fill="#fffdf7"/>
+      <line x1="40" y1="170" x2="300" y2="170" stroke="#9a8b6a"/><line x1="40" y1="170" x2="40" y2="20" stroke="#9a8b6a"/>
+      <line x1="50" y1="150" x2="290" y2="50" stroke="#e8930c" stroke-width="2.5"/>
+      <g fill="#4c8df6">
+        <circle cx="80" cy="120" r="5"/><circle cx="140" cy="130" r="5"/><circle cx="200" cy="70" r="5"/><circle cx="260" cy="75" r="5"/>
+      </g>
+      <g stroke="#e45756" stroke-width="2" stroke-dasharray="4 3">
+        <line x1="80" y1="120" x2="80" y2="137.5"/><line x1="140" y1="130" x2="140" y2="112.5"/><line x1="200" y1="70" x2="200" y2="87.5"/><line x1="260" y1="75" x2="260" y2="62.5"/>
+      </g>
+      <text x="60" y="195" font-size="11" fill="#6b5836">점 = 실젯값 · 주황 선 = 예측 · 빨간 점선 = 오차</text>
+      <g transform="translate(340,20)">
+        <text x="0" y="14" font-size="12" font-weight="700" fill="#3a2e1a">오차 → 제곱오차</text>
+        <rect x="0" y="30" width="10" height="10" fill="#e45756"/><text x="16" y="40" font-size="11">1 → 1</text>
+        <rect x="0" y="50" width="20" height="20" fill="#e45756"/><text x="26" y="64" font-size="11">2 → 4</text>
+        <rect x="0" y="80" width="40" height="40" fill="#e45756"/><text x="46" y="104" font-size="11">4 → 16</text>
+        <text x="0" y="150" font-size="11" fill="#6b5836">큰 오차 하나(4)가 작은 오차</text>
+        <text x="0" y="166" font-size="11" fill="#6b5836">넷(1·1·1·1, 제곱합 4)보다 무겁다</text>
+      </g>
+    </svg>
+    <div class="cap">오차는 세로 거리, 제곱오차는 그 거리를 한 변으로 하는 정사각형의 넓이입니다.</div>
+  </div>
+
+  <h3><span class="step b">예제 1</span>오차 · MAE · MSE</h3>
+  <div class="ex">
+    <div class="h">내가 만든 기온 예측기의 4일 기록입니다. 오차의 합, MAE, MSE를 구합니다.</div>
+    <table class="tb">
+      <tr><th class="k"></th><th>월</th><th>화</th><th>수</th><th>목</th></tr>
+      <tr><td class="k">실제(℃)</td><td>22</td><td>25</td><td>27</td><td>24</td></tr>
+      <tr><td class="k">예측(℃)</td><td>23</td><td>24</td><td>27</td><td>26</td></tr>
+      <tr><td class="k">오차(실제−예측)</td><td class="ans">−1</td><td class="ans">+1</td><td class="ans">0</td><td class="ans">−2</td></tr>
+      <tr><td class="k">|오차|</td><td class="ans">1</td><td class="ans">1</td><td class="ans">0</td><td class="ans">2</td></tr>
+      <tr><td class="k">오차²</td><td class="ans">1</td><td class="ans">1</td><td class="ans">0</td><td class="ans">4</td></tr>
+    </table>
+    <ol class="sol">
+      <li>오차를 그냥 더하면 (−1) + 1 + 0 + (−2) = <span class="res">−2</span>. 이 값만 보면 4일에 2도 빗나간 것처럼 보이지만, 실제로는 4일 중 3일을 틀렸습니다. 상쇄 때문입니다.</li>
+      <li>MAE = (1 + 1 + 0 + 2) ÷ 4 = <span class="res">1.0</span>. 하루 평균 1도 빗나갑니다.</li>
+      <li>MSE = (1 + 1 + 0 + 4) ÷ 4 = <span class="res">1.5</span>. 목요일의 오차 2가 제곱되어 4가 되면서 MSE를 끌어올렸습니다.</li>
+    </ol>
+  </div>
+
+  <h3><span class="step b">예제 2</span>R² — 평균값 기준과 비교하기</h3>
+  <div class="ex">
+    <div class="h">어느 도시의 5년치 연평균 기온과 모델의 예측값입니다. R²를 구합니다.</div>
+    <table class="tb">
+      <tr><th class="k"></th><th>1년차</th><th>2년차</th><th>3년차</th><th>4년차</th><th>5년차</th></tr>
+      <tr><td class="k">실제(℃)</td><td>4</td><td>6</td><td>8</td><td>10</td><td>12</td></tr>
+      <tr><td class="k">모델의 예측(℃)</td><td>5</td><td>6</td><td>7</td><td>10</td><td>12</td></tr>
+      <tr><td class="k">오차²</td><td class="ans">1</td><td class="ans">0</td><td class="ans">1</td><td class="ans">0</td><td class="ans">0</td></tr>
+      <tr><td class="k">(실제 − 평균)²</td><td class="ans">16</td><td class="ans">4</td><td class="ans">0</td><td class="ans">4</td><td class="ans">16</td></tr>
+    </table>
+    <ol class="sol">
+      <li>실제 값의 평균 = (4 + 6 + 8 + 10 + 12) ÷ 5 = <span class="res">8</span>. 평균값 기준 모델은 5년 내내 8만 예측합니다.</li>
+      <li>평균값 기준의 제곱오차 합 SST = 16 + 4 + 0 + 4 + 16 = <span class="res">40</span>.</li>
+      <li>내 모델의 제곱오차 합 SSE = 1 + 0 + 1 + 0 + 0 = <span class="res">2</span>.</li>
+      <li>R² = 1 − (2 ÷ 40) = 1 − 0.05 = <span class="res">0.95</span>. "내 모델은 평균만 찍는 모델이 내는 오차의 95%를 없앴다."</li>
+    </ol>
+  </div>
+
+  <h3><span class="step g">연습 1</span>오차 표 채우기</h3>
+  <div class="pr">
+    <div class="h">영화 4편의 실제 관객 수(만 명)와 내 모델의 예측값입니다. 빈칸을 채우고 세 값을 구하세요.</div>
+    <table class="tb">
+      <tr><th class="k"></th><th>가</th><th>나</th><th>다</th><th>라</th></tr>
+      <tr><td class="k">실제(만 명)</td><td>30</td><td>50</td><td>40</td><td>60</td></tr>
+      <tr><td class="k">예측(만 명)</td><td>34</td><td>46</td><td>40</td><td>64</td></tr>
+      <tr><td class="k">오차</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="k">|오차|</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td class="k">오차²</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <p>(1) 오차의 합 <span class="fill"></span> (2) MAE <span class="fill"></span> (3) MSE <span class="fill"></span></p>
+    <p>(4) 오차의 합이 작은데도 이 모델을 "거의 완벽하다"고 말할 수 없는 까닭을 오차 표의 숫자 하나와 함께 한 문장으로 쓰세요.</p>
+    <span class="line"></span>
+    <details class="key"><summary>정답 확인</summary><div class="in">
+      <p>오차 −4, +4, 0, −4 · |오차| 4, 4, 0, 4 · 오차² 16, 16, 0, 16.</p>
+      <p>(1) −4 (2) 12 ÷ 4 = <b>3.0</b> (3) 48 ÷ 4 = <b>12.0</b> (4) +4와 −4가 상쇄되어 합이 작아 보일 뿐, 4편 중 3편을 4만 명씩 빗나갔다. 부호를 없애야 크기를 공정하게 잰다.</p>
+    </div></details>
+  </div>
+
+  <h3><span class="step g">연습 2</span>MAE와 MSE의 판정이 갈릴 때</h3>
+  <div class="pr">
+    <div class="h">두 예측기가 같은 4일을 예측했고 오차만 적어 두었습니다.</div>
+    <table class="tb">
+      <tr><th class="k"></th><th>1일</th><th>2일</th><th>3일</th><th>4일</th></tr>
+      <tr><td class="k">모델 A의 오차</td><td>+2</td><td>−2</td><td>+2</td><td>−2</td></tr>
+      <tr><td class="k">모델 B의 오차</td><td>0</td><td>0</td><td>0</td><td>−6</td></tr>
+    </table>
+    <p>(1) MAE: A <span class="fill"></span> B <span class="fill"></span> (2) MSE: A <span class="fill"></span> B <span class="fill"></span></p>
+    <p>(3) MAE로 고르면 <span class="fill"></span>, MSE로 고르면 <span class="fill"></span>이 좋은 모델입니다.</p>
+    <p>(4) 판정이 갈린 까닭을 "제곱"이라는 낱말과 표의 오차 하나를 써서 한 문장으로 설명하세요.</p>
+    <span class="line"></span>
+    <details class="key"><summary>정답 확인</summary><div class="in">
+      <p>(1) A = 8 ÷ 4 = <b>2.0</b>, B = 6 ÷ 4 = <b>1.5</b> (2) A = 16 ÷ 4 = <b>4.0</b>, B = 36 ÷ 4 = <b>9.0</b> (3) MAE는 B, MSE는 A (4) B의 4일차 오차 6은 제곱하면 36이 되어, A의 작은 오차 넷(제곱합 16)보다 훨씬 무겁게 취급된다. MSE는 가끔 크게 틀리는 모델에 불리하다.</p>
+    </div></details>
+  </div>
+
+  <h3><span class="step g">연습 3</span>R² 계산</h3>
+  <div class="pr">
+    <div class="h">4개 점의 실제 값과 직선의 예측값입니다. 표를 채우고 R²를 구하세요.</div>
+    <table class="tb">
+      <tr><th class="k"></th><th>1</th><th>2</th><th>3</th><th>4</th><th>합</th></tr>
+      <tr><td class="k">실제</td><td>10</td><td>20</td><td>30</td><td>40</td><td></td></tr>
+      <tr><td class="k">예측</td><td>12</td><td>18</td><td>32</td><td>38</td><td></td></tr>
+      <tr><td class="k">오차²</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank">SSE =</td></tr>
+      <tr><td class="k">(실제 − 평균)²</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank">SST =</td></tr>
+    </table>
+    <p>(1) 평균 <span class="fill"></span> (2) SST <span class="fill"></span> (3) SSE <span class="fill"></span> (4) R² = 1 − (SSE ÷ SST) = <span class="fill"></span></p>
+    <p>(5) 말로 옮기기: "내 모델은 평균만 찍는 모델이 내는 오차의 <span class="fill"></span>%를 없앴다."</p>
+    <details class="key"><summary>정답 확인</summary><div class="in">
+      <p>오차² 4, 4, 4, 4 → SSE 16 · (실제−평균)² 225, 25, 25, 225 → SST 500.</p>
+      <p>(1) 25 (2) 500 (3) 16 (4) 1 − 16/500 = <b>0.968</b> (5) 96.8%</p>
+    </div></details>
+  </div>
+
+  <h3><span class="step v">스스로 풀기</span>1부</h3>
+  <div class="pr self">
+    <div class="h">문제 1. 5년치 실제 기온 5, 7, 9, 11, 13과 예측 6, 8, 8, 10, 13. 평균·SST·SSE·R²를 구하세요.</div>
+    <span class="line"></span><span class="line"></span>
+    <details class="key"><summary>정답 확인</summary><div class="in"><p>평균 9 · SST = 16 + 4 + 0 + 4 + 16 = 40 · 오차 −1, −1, +1, +1, 0 → SSE = 4 · R² = 1 − 4/40 = <b>0.90</b></p></div></details>
+  </div>
+  <div class="pr self">
+    <div class="h">문제 2. 영화 3편의 실제 관객(만 명) 20, 40, 90과 예측 30, 40, 80. R²를 구하세요. 다른 세 영화에서도 SSE는 200으로 같고, SST는 2600보다 작지만 0보다 크다고 가정할 때 R²는 어떻게 달라집니까?</div>
+    <span class="line"></span><span class="line"></span>
+    <details class="key"><summary>정답 확인</summary><div class="in"><p>평균 50 · SST = 900 + 100 + 1600 = 2600 · SSE = 100 + 0 + 100 = 200 · R² = 1 − 200/2600 ≈ <b>0.923</b>. SSE가 200으로 같을 때 SST(분모)가 작아지면 200/SST가 커지므로 R²는 낮아진다. R²는 데이터의 퍼짐에도 달려 있다.</p></div></details>
+  </div>
+  <div class="pr self">
+    <div class="h">문제 3. 실제 값 10, 12, 14에 대해 세 번 모두 16으로 예측하는 엉터리 모델이 있습니다. SST·SSE·R²를 구하고, R²가 음수라는 것이 무슨 뜻인지 한 문장으로 쓰세요.</div>
+    <span class="line"></span><span class="line"></span>
+    <details class="key"><summary>정답 확인</summary><div class="in"><p>평균 12 · SST = 4 + 0 + 4 = 8 · SSE = 36 + 16 + 4 = 56 · R² = 1 − 56/8 = <b>−6</b>. 평균만 찍는 평균값 기준 모델보다도 못하다는 뜻이다. R²는 음수가 될 수 있다.</p></div></details>
+  </div>
+  <div class="pr self">
+    <div class="h">문제 4. 계산 없이 답하기. 데이터의 평균값만 매번 찍는 모델의 R²는 얼마이며, 그 까닭은 무엇입니까?</div>
+    <span class="line"></span>
+    <details class="key"><summary>정답 확인</summary><div class="in"><p><b>0</b>. 이 모델의 SSE가 곧 SST이므로 1 − 1 = 0이다.</p></div></details>
+  </div>
+  <div class="pr self">
+    <div class="h">문제 5. 어느 모델의 MSE가 0.4이고 데이터가 5개입니다. 제곱오차의 합(SSE)은 얼마입니까? 평균 모델의 제곱오차 합이 40이라면 R²는?</div>
+    <span class="line"></span>
+    <details class="key"><summary>정답 확인</summary><div class="in"><p>SSE = 0.4 × 5 = 2 · R² = 1 − 2/40 = <b>0.95</b>. MSE는 SSE를 개수로 나눈 값이므로 거꾸로 곱하면 SSE가 나온다.</p></div></details>
+  </div>
+
+  <h3><span class="step t">수업 실측</span>숫자를 해석하기</h3>
+  <div class="pr real">
+    <div class="h">활동지 기본 문제에서 평균값 기준의 제곱오차 합은 40, 고른 모델의 제곱오차 합은 10이었습니다. 7차시 영화 예측기에서는 변수 조합을 바꿀 때마다 테스트 점수가 달라졌습니다.</div>
+    <p>(1) R² = 1 − (10 ÷ 40) = 0.75입니다. 이 값을 "예측의 75%가 맞았다"로 읽으면 왜 틀립니까?</p>
+    <span class="line"></span>
+    <p>(2) 변수를 늘렸는데 테스트 점수가 오히려 내려갔다면 무엇을 뜻합니까?</p>
+    <span class="line"></span>
+    <p>(3) 개봉 전에는 알 수 없는 값을 입력에 넣었더니 점수가 크게 올랐습니다. 이것을 성능 개선이라 부를 수 있습니까?</p>
+    <span class="line"></span>
+    <p>(4) "R²가 높은 모델 = 미래를 잘 맞히는 모델"이라는 주장의 허점을 학습 범위 밖 예측을 예로 쓰세요.</p>
+    <span class="line"></span>
+    <details class="key"><summary>예시 답</summary><div class="in">
+      <p>(1) R²는 평균값 기준과 비교해 제곱오차 합이 얼마나 줄었는지를 나타내는 비율이다. 맞힌 비율이 아니다.</p>
+      <p>(2) 관련이 적은 변수를 넣으면 학습에 쓰지 않은 데이터에서는 점수가 떨어질 수 있다. 변수를 늘린다고 점수가 반드시 오르지는 않는다.</p>
+      <p>(3) 아니다. 예측 시점에 확보할 수 없는 값을 넣은 것이므로 실제로는 쓸 수 없는 조건에서 나온 점수다.</p>
+      <p>(4) R²는 가진 데이터 안에서의 성적이다. 학습 범위 밖을 예측하면 직선은 숫자를 내놓지만 그 값이 실제와 맞는지는 이 점수가 보장하지 않는다.</p>
+    </div></details>
+  </div>
+
+
+  <!-- ============================================================ 2부 분류 -->
+
+
+  <!-- ============================================================ 3부 군집 -->
+  
+
+  <!-- ============================================================ 4부 연관 -->
+</main>
+</div>
+
+<footer class="foot">송탄고등학교 · 데이터 과학 · 학생용 교재 · 문제의 수치는 손계산용 자작이며, "수업 실측" 문제만 수업에서 함께 본 실측값입니다</footer>
+</body>
+</html>
