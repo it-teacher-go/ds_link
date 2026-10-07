@@ -160,7 +160,7 @@
       <tr><td class="k">오차²</td><td class="ans">1</td><td class="ans">1</td><td class="ans">0</td><td class="ans">4</td></tr>
     </table>
     <ol class="sol">
-      <li>오차를 그냥 더하면 (−1) + 1 + 0 + (−2) = <span class="res">−2</span>. 이 값만 보면 4일에 2도 빗나간 것처럼 보이지만, 실제로는 4일 중 3일을 틀렸습니다. 상쇄 때문입니다.</li>
+      <li>오차를 그냥 더하면 (−1) + 1 + 0 + (−2) = <span class="res">−2</span>. +와 -가 상쇄되어 전체적인 예측 정확도를 평가하기에는 부적절합니다. </li>
       <li>MAE = (1 + 1 + 0 + 2) ÷ 4 = <span class="res">1.0</span>. 하루 평균 1도 빗나갑니다.</li>
       <li>MSE = (1 + 1 + 0 + 4) ÷ 4 = <span class="res">1.5</span>. 목요일의 오차 2가 제곱되어 4가 되면서 MSE를 끌어올렸습니다.</li>
     </ol>
@@ -200,7 +200,7 @@
     <span class="line"></span>
     <details class="key"><summary>정답 확인</summary><div class="in">
       <p>오차 −4, +4, 0, −4 · |오차| 4, 4, 0, 4 · 오차² 16, 16, 0, 16.</p>
-      <p>(1) −4 (2) 12 ÷ 4 = <b>3.0</b> (3) 48 ÷ 4 = <b>12.0</b> (4) +4와 −4가 상쇄되어 합이 작아 보일 뿐, 4편 중 3편을 4만 명씩 빗나갔다. 부호를 없애야 크기를 공정하게 잰다.</p>
+      <p>(1) −4 (2) 12 ÷ 4 = <b>3.0</b> (3) 48 ÷ 4 = <b>12.0</b> (4) +4와 −4가 상쇄되어 합이 작아 보일 뿐, 4편 중 3편을 4만 명씩 잘못 예측해 빗나갔다. 오차의 부호는 실제값보다 높게 예측했는지 낮게 예측했는지를 나타내므로, 얼마나 크게 빗나갔는지를 비교하려면 부호(방향)를 없애고 오차의 크기만 살펴봐야한다.</p>
     </div></details>
   </div>
 
@@ -217,7 +217,7 @@
     <p>(4) 판정이 갈린 까닭을 "제곱"이라는 낱말과 표의 오차 하나를 써서 한 문장으로 설명하세요.</p>
     <span class="line"></span>
     <details class="key"><summary>정답 확인</summary><div class="in">
-      <p>(1) A = 8 ÷ 4 = <b>2.0</b>, B = 6 ÷ 4 = <b>1.5</b> (2) A = 16 ÷ 4 = <b>4.0</b>, B = 36 ÷ 4 = <b>9.0</b> (3) MAE는 B, MSE는 A (4) B의 4일차 오차 6은 제곱하면 36이 되어, A의 작은 오차 넷(제곱합 16)보다 훨씬 무겁게 취급된다. MSE는 가끔 크게 틀리는 모델에 불리하다.</p>
+      <p>(1) A = 8 ÷ 4 = <b>2.0</b>, B = 6 ÷ 4 = <b>1.5</b> (2) A = 16 ÷ 4 = <b>4.0</b>, B = 36 ÷ 4 = <b>9.0</b> (3) MAE는 B, MSE는 A (4) B의 4일차 오차 6은 제곱하면 36이 되어, A의 작은 오차 넷(제곱합 16)보다 훨씬 무겁게(더 크게) 반영된다. MSE는 가끔 크게 틀리는 모델에 불리하게 평가한. (평가자 입장에서 큰 오차를 특별히 중요하게 평가하고 싶으면 MSE, 모든 오차를 비교적 균등하게 보고싶으면 MAE)</p>
     </div></details>
   </div>
 
@@ -232,7 +232,7 @@
       <tr><td class="k">(실제 − 평균)²</td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank"></td><td class="blank">SST =</td></tr>
     </table>
     <p>(1) 평균 <span class="fill"></span> (2) SST <span class="fill"></span> (3) SSE <span class="fill"></span> (4) R² = 1 − (SSE ÷ SST) = <span class="fill"></span></p>
-    <p>(5) 말로 옮기기: "내 모델은 평균만 찍는 모델이 내는 오차의 <span class="fill"></span>%를 없앴다."</p>
+    <p>(5) 말로 옮기기: "내 모델은 평균만 찍는 모델이 내는 오차의 <span class="fill"></span>(%)를 없앴다."</p>
     <details class="key"><summary>정답 확인</summary><div class="in">
       <p>오차² 4, 4, 4, 4 → SSE 16 · (실제−평균)² 225, 25, 25, 225 → SST 500.</p>
       <p>(1) 25 (2) 500 (3) 16 (4) 1 − 16/500 = <b>0.968</b> (5) 96.8%</p>
@@ -246,9 +246,9 @@
     <details class="key"><summary>정답 확인</summary><div class="in"><p>평균 9 · SST = 16 + 4 + 0 + 4 + 16 = 40 · 오차 −1, −1, +1, +1, 0 → SSE = 4 · R² = 1 − 4/40 = <b>0.90</b></p></div></details>
   </div>
   <div class="pr self">
-    <div class="h">문제 2. 영화 3편의 실제 관객(만 명) 20, 40, 90과 예측 30, 40, 80. R²를 구하세요. 다른 세 영화에서도 SSE는 200으로 같고, SST는 2600보다 작지만 0보다 크다고 가정할 때 R²는 어떻게 달라집니까?</div>
+    <div class="h">문제 2. 영화 3편의 실제 관객수(만 명)가 20, 40, 90이고, 예측값이 30, 40, 80일 때 R²를 구하세요. 또 다른 영화 3편을 예측한 결과 SSE는 200으로 같고, SST는 0보다 크고 2600보다 작다고 가정할 때 R²는 어떻게 달라집니까?</div>
     <span class="line"></span><span class="line"></span>
-    <details class="key"><summary>정답 확인</summary><div class="in"><p>평균 50 · SST = 900 + 100 + 1600 = 2600 · SSE = 100 + 0 + 100 = 200 · R² = 1 − 200/2600 ≈ <b>0.923</b>. SSE가 200으로 같을 때 SST(분모)가 작아지면 200/SST가 커지므로 R²는 낮아진다. R²는 데이터의 퍼짐에도 달려 있다.</p></div></details>
+    <details class="key"><summary>정답 확인</summary><div class="in"><p>평균 50 · SST = 900 + 100 + 1600 = 2600 · SSE = 100 + 0 + 100 = 200 · R² = 1 − 200/2600 ≈ <b>0.923</b>. SSE가 200으로 이 해가 같을 때 SST(분모)가 작아지면 200/SST가 커지므로 R²는 낮아진다. R²는 데이터의 퍼짐(실제값들의 평균에서 얼마나 멀리 떨어져 있느냐)에도 달려 있다.</p></div></details>
   </div>
   <div class="pr self">
     <div class="h">문제 3. 실제 값 10, 12, 14에 대해 세 번 모두 16으로 예측하는 엉터리 모델이 있습니다. SST·SSE·R²를 구하고, R²가 음수라는 것이 무슨 뜻인지 한 문장으로 쓰세요.</div>
@@ -261,7 +261,7 @@
     <details class="key"><summary>정답 확인</summary><div class="in"><p><b>0</b>. 이 모델의 SSE가 곧 SST이므로 1 − 1 = 0이다.</p></div></details>
   </div>
   <div class="pr self">
-    <div class="h">문제 5. 어느 모델의 MSE가 0.4이고 데이터가 5개입니다. 제곱오차의 합(SSE)은 얼마입니까? 평균 모델의 제곱오차 합이 40이라면 R²는?</div>
+    <div class="h">문제 5. 어느 모델의 MSE가 0.4이고 데이터가 5개입니다. 제곱오차의 합(SSE)은 얼마입니까? 평균 모델의 제곱오차 합이 40일때 R²을 구하시오.</div>
     <span class="line"></span>
     <details class="key"><summary>정답 확인</summary><div class="in"><p>SSE = 0.4 × 5 = 2 · R² = 1 − 2/40 = <b>0.95</b>. MSE는 SSE를 개수로 나눈 값이므로 거꾸로 곱하면 SSE가 나온다.</p></div></details>
   </div>
