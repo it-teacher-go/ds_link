@@ -246,7 +246,7 @@ function initW_baseline(root, D) {
     return { ai: -1, bi: -1, an: an, bn: bn, co: co, na: na, nb: nb, N: N,
       conf: conf, base: base, lift: base ? conf / base : 0, tag: '' };
   }
-  const handList = [raw('제육볶음', '배추김치', 6, 10, 60, 100), raw('순대국', '부추겉절이', 5, 5, 20, 100)];
+  const handList = [raw('제육볶음', '배추김치', 6, 10, 60, 100), raw('순대국', '깍두기', 5, 5, 20, 100)];
 
   const SETS = {
     meal: { list: mealList, sortable: true },
