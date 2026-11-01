@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>급식 연관 규칙 손계산 활동지 · 100일</title>
+<style>
+body{font-family:'Malgun Gothic',sans-serif;color:#283244;background:#f7f6f0;margin:0;line-height:1.6}main{max-width:850px;margin:24px auto;background:white;padding:36px 46px;box-shadow:0 4px 22px #0001}h1{font-size:26px;margin:0}h2{font-size:18px;margin:26px 0 8px;border-bottom:2px solid #e9dba6;padding-bottom:5px}.sub{color:#666}.meta{display:flex;gap:28px;margin:12px 0 22px}table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #c9d0d5;padding:9px 12px;text-align:center}th{background:#f9f2d9}td:first-child{text-align:left}.box{background:#fff9e7;padding:12px 16px;border-radius:8px}.blank{height:29px}.write{border-bottom:1px dotted #8e939c;min-height:34px}.answer{margin-top:12px;color:#626a75}.small{font-size:13px;color:#73777f}.pagebreak{break-before:page}.key{background:#edf8ee;border-left:4px solid #59a477;padding:12px 16px}button{border:1px solid #aaa;padding:8px 16px;border-radius:8px;background:#fff;cursor:pointer}@media print{body{background:#fff}main{margin:0;padding:5mm 8mm;box-shadow:none;max-width:none}button{display:none}.pagebreak{break-before:page}} 
+</style></head><body><main>
+<button onclick="window.print()">🖨️ 인쇄 / PDF 저장</button>
+<h1>🍚 급식 연관 규칙 손계산 활동지</h1>
+<p class="sub">데이터 과학 · 연관 분석 · 지지도 / 신뢰도 / 향상도</p>
+<div class="meta"><span>학번 __________</span><span>이름 __________</span><span>날짜 __________</span></div>
+<div class="box"><strong>상황</strong> 급식 안내 화면에는 '오늘 이 메뉴가 나오면 저 메뉴도 함께 나올 가능성이 높다'는 예고를 딱 하나만 올릴 수 있습니다. 아래의 두 규칙 중 무엇을 선택할까요?<br>
+※ 송탄고에 등장하는 메뉴명을 사용했지만, <strong>아래 숫자는 손계산 연습을 위해 만든 가상의 100일 자료</strong>입니다. 실제 184일 기록과 구별하세요.</div>
+<h2>1. 자료 살펴보기</h2>
+<table><thead><tr><th>가상 급식 100일</th><th>규칙 A<br>제육볶음 → 배추김치</th><th>규칙 B<br>순대국 → 부추겉절이</th></tr></thead><tbody>
+<tr><td>앞 메뉴가 나온 날</td><td>10일</td><td>5일</td></tr>
+<tr><td>뒤 메뉴가 나온 날</td><td>60일</td><td>20일</td></tr>
+<tr><td>두 메뉴가 함께 나온 날</td><td>6일</td><td>5일</td></tr></tbody></table>
+<p>계산 전 예상: 더 좋은 예고가 될 규칙은 ________ 입니다. 이유: __________________________________</p>
+<h2>2. 손으로 계산하기</h2>
+<p class="small">분모를 반드시 적고, 계산 순서 ① 지지도 → ② 신뢰도 → ③ 뒤 메뉴 등장률 → ④ 향상도를 지키세요.</p>
+<table><thead><tr><th>지표와 계산식</th><th>규칙 A (계산 과정과 값)</th><th>규칙 B (계산 과정과 값)</th></tr></thead><tbody>
+<tr><td>① 지지도<br><small>동시 일수 ÷ 100</small></td><td class="blank"></td><td></td></tr>
+<tr><td>② 신뢰도<br><small>동시 일수 ÷ 앞 메뉴 일수</small></td><td class="blank"></td><td></td></tr>
+<tr><td>③ 뒤 메뉴 등장률<br><small>뒤 메뉴 일수 ÷ 100</small></td><td class="blank"></td><td></td></tr>
+<tr><td>④ 향상도<br><small>신뢰도 ÷ 뒤 메뉴 등장률</small></td><td class="blank"></td><td></td></tr></tbody></table>
+<h2>3. 판단하기</h2>
+<p>① 지지도가 더 높은 것은 ________ , ② 신뢰도가 더 높은 것은 ________ , ③ 향상도가 더 높은 것은 ________ 입니다.</p>
+<p>급식 안내에 고를 규칙: ________ . 핵심 판단 지표: ________</p>
+<div class="write">이유(숫자를 적어 설명):</div><div class="write"></div>
+<p>향상도 1.00은 무엇을 뜻할까요?</p><div class="write"></div>
+<h2>4. 방향을 바꾸면?</h2>
+<p>규칙 B를 <strong>부추겉절이 → 순대국</strong>으로 뒤집어 계산해 봅시다.</p>
+<p>신뢰도 = ______ ÷ ______ = ______ / 향상도 = ______ ÷ ______ = ______</p>
+<p>규칙 방향을 바꾸면 바뀌는 지표는 __________ , 그대로인 지표는 __________ 와 __________ 입니다.</p>
+<h2>5. 실제 급식 184일과 대조하기</h2>
+<table><thead><tr><th>비교</th><th>가상 100일</th><th>실제 송탄고 184일</th></tr></thead><tbody>
+<tr><td>A 제육볶음 → 배추김치<br>동시 / 신뢰도 / 향상도</td><td>______ / ______ / ______</td><td>______ / ______ / ______</td></tr>
+<tr><td>B 순대국 → 부추겉절이<br>동시 / 신뢰도 / 향상도</td><td>______ / ______ / ______</td><td>______ / ______ / ______</td></tr></tbody></table>
+<p>계산값이 다른 이유는 무엇일까요? ______________________________________________________</p>
+<div class="pagebreak"></div>
+<h1>👩‍🏫 교사용 정답 및 지도 포인트</h1>
+<p class="small">학생 배부 시 이 페이지는 제외하고 인쇄하세요.</p>
+<table><thead><tr><th>지표</th><th>A</th><th>B</th></tr></thead><tbody>
+<tr><td>지지도</td><td>6 ÷ 100 = <b>0.06</b></td><td>5 ÷ 100 = <b>0.05</b></td></tr>
+<tr><td>신뢰도</td><td>6 ÷ 10 = <b>0.60</b></td><td>5 ÷ 5 = <b>1.00</b></td></tr>
+<tr><td>뒤 메뉴 등장률</td><td>60 ÷ 100 = <b>0.60</b></td><td>20 ÷ 100 = <b>0.20</b></td></tr>
+<tr><td>향상도</td><td>0.60 ÷ 0.60 = <b>1.00</b></td><td>1.00 ÷ 0.20 = <b>5.00</b></td></tr></tbody></table>
+<div class="key"><b>판단 예시:</b> 지지도는 A가 조금 높지만, A는 배추김치가 원래 나오는 비율(0.60)과 조건부 비율(0.60)이 같아 추가 정보가 없습니다. B는 평소 등장률 0.20에 비해 조건부 비율이 1.00으로 5배이므로 B를 선택합니다. 단, 5일만 관찰된 가상 사례이고 다음 식단을 보장하지 않습니다.</div>
+<p><b>방향 바꾸기:</b> 부추겉절이 → 순대국의 신뢰도는 5 ÷ 20 = <b>0.25</b>. 순대국 등장률은 5 ÷ 100 = 0.05이므로 향상도 = 0.25 ÷ 0.05 = <b>5.00</b>. 지지도 0.05와 향상도 5.00은 방향과 무관합니다.</p>
+<p><b>실제 184일 확인값:</b> A는 제육볶음 6일, 배추김치 102일, 동시 4일 → 지지도 4/184 ≈ 0.022, 신뢰도 4/6 ≈ <b>0.67</b>, 향상도 4×184/(6×102) ≈ <b>1.20</b>. B는 순대국 6일, 부추겉절이 6일, 동시 6일 → 지지도 6/184 ≈ 0.033, 신뢰도 <b>1.00</b>, 향상도 184/6 ≈ <b>30.67</b>.</p>
+<p class="small">실제 데이터의 메뉴명은 괄호 및 괄호 속 내용을 제거한 뒤 날짜별로 한 번씩 집계. 184일 기록과 가상 100일 연습값은 서로 다른 자료입니다.</p>
+</main></body></html>
