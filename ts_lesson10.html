@@ -28,9 +28,8 @@ figure[data-fig="baseline"] .wctl label, figure[data-fig="baseline"] .wctl .wout
 </head>
 <body>
 <div class="topbar"><div class="inner">
-  <a class="brand" href="index.html"><span class="chick">🧭</span> 데이터 과학 <span class="a">송탄고</span></a>
+  <a class="brand" href="#"><span class="chick">🧭</span> 데이터 과학 <span class="a">송탄고</span></a>
   <span class="spacer"></span>
-  <a class="home" href="index.html">← 목차</a>
   <span class="badge">학생용</span>
   <span class="badge review-edition">개정 검토본</span>
 </div></div>
@@ -319,273 +318,7 @@ figure[data-fig="baseline"] .wctl label, figure[data-fig="baseline"] .wctl .wout
     <figcaption>활동지에서 손으로 계산한 규칙 A·B의 값을 두 막대로 확인합니다. [방향 바꾸기]를 누르면 <b>신뢰도는 달라지지만 향상도는 그대로</b>임을 확인할 수 있습니다.</figcaption>
   </figure>
 
-  <h2>3. 실습 ① — 규칙 표를 만들고 손계산과 맞춘다</h2>
-  <div class="callout tip">
-    <div class="h">🍚 우리는 DG푸드의 데이터 과학 인턴입니다</div>
-    <p>DG푸드는 이 수업에서만 사용하는 <b>가상의 급식 납품 회사</b>입니다. 다만 분석에 사용하는 급식 기록은 <b>송탄고에서 실제로 나온 식단</b>입니다.</p>
-    <p>식단팀은 어느 반찬이 어느 반찬과 자주 함께 나오는지 알아야 재료를 미리 준비하고 안내를 붙일 수 있습니다.</p>
-    <p>데이터 과학 인턴은 찾은 규칙만 보고하지 않습니다.</p>
-    <p><b>규칙과 함께 근거 숫자를 보고합니다.</b></p>
-  </div>
-  <p>오늘 만드는 앱은 하나입니다.</p>
-  <p>송탄고 중식 184일의 저장본을 읽어 하루 식단을 장바구니 한 건으로 보고, 같은 날 함께 나온 두 메뉴의 <b>지지도·신뢰도·향상도</b>를 계산해 표로 만드는 앱입니다.</p>
-  <p>저장본은 갱신하지 않는 고정 파일이므로 누가 실행해도 같은 값이 나옵니다. 인증키도 필요하지 않습니다.</p>
-  <div class="specimen-row" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
-    <div class="specimen st">
-      <div class="tag">원본 — 저장본의 한 줄</div>
-      <div class="body">
-        <div style="overflow-x:auto;width:100%">
-          <table class="minitable">
-            <thead><tr><th>날짜</th><th>식사</th><th>메뉴</th></tr></thead>
-            <tbody>
-              <tr><td>20251106</td><td>중식</td><td>기장밥|왕만두전골|숙주나물무침|코다리양념구이|배추김치|자두주스…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="note">메뉴 열에는 그날 나온 메뉴가 세로줄(<code>|</code>)로 이어져 있습니다. <code>김치어묵우동(대)</code>처럼 괄호가 붙은 이름도 있으므로, <b>괄호와 괄호 안의 내용을 제거한 뒤</b> 같은 메뉴로 집계합니다.</div>
-    </div>
-    <div class="specimen semi">
-      <div class="tag">변환 — 장바구니 1건</div>
-      <div class="body"><pre class="mini">{ 기장밥, 왕만두전골, 숙주나물무침, 코다리양념구이, … }</pre></div>
-      <div class="note"><b>하루 식단 하나가 장바구니 한 건이고, 메뉴 하나가 상품 하나에 해당합니다.</b> 따라서 중식 184일은 장바구니 184건입니다.</div>
-    </div>
-  </div>
-  <ol class="steps">
-    <li><span class="st">① 샘플 프롬프트 — 그대로 붙여 넣기</span>
-      <div class="codewrap prompt"><span class="label">① 프롬프트</span><button class="copy-btn">복사</button><pre>"급식 규칙 찾기" 스트림릿 앱을 만들어 줘. 파일 이름은 main.py.
-아래 주소의 CSV를 읽어 줘. 글자는 UTF-8이고 열은 날짜, 식사, 메뉴 셋이야.
-https://raw.githubusercontent.com/it-teacher-go/data-share-/main/songtan_meals_184.csv
-메뉴 열에는 그날 나온 메뉴가 세로줄(|)로 이어져 있고, 송탄고 중식 184일이 한 줄에 하루씩 들어 있어.
-- 하루 식단 하나를 장바구니 한 건으로 봐 줘.
-- 메뉴 이름의 괄호와 그 안의 내용은 전부 제외하고 세 줘.
-- 같은 날 함께 나온 적이 있는 메뉴 쌍을 모두 찾아 표로 만들어 줘. 열은 조건, 결과, 동시, 지지도, 신뢰도, 향상도.
-- 한 쌍에서 조건과 결과를 바꾼 규칙도 함께 넣어 줘.
-- 정렬은 향상도 순, 신뢰도 순, 동시 순 가운데 고르게 해 줘.
-- 메뉴 이름을 고르면 그 메뉴가 들어간 규칙만 모아 볼 수 있게 해 줘.
-- 표 위에 급식 일수, 메뉴 종류 수, 함께 나온 적이 있는 메뉴 쌍의 수를 한 줄로 적어 줘.
-- 향상도 상위 열 개는 plotly로 가로 막대그래프도 그려 줘. 메뉴로 좁히면 그래프도 함께 좁혀 줘.
-- 필요한 라이브러리 목록(requirements.txt)도 같이 줘. 버전 숫자 없이 이름만.</pre></div>
-      <details class="sample"><summary>선생님이 실행해 확인한 예시 코드</summary><p class="mini"><code>main.py</code>와 <code>requirements.txt</code>, 두 파일로 저장합니다.</p><div class="codewrap code"><span class="label">main.py — 여기까지가 전체</span><button class="copy-btn">복사</button><pre># main.py — 급식 규칙 찾기: 같은 날 함께 나온 메뉴 쌍을 센다
-import re
-from collections import Counter
-from itertools import combinations
-
-import pandas as pd
-import plotly.express as px
-import streamlit as st
-
-URL = "https://raw.githubusercontent.com/it-teacher-go/data-share-/main/songtan_meals_184.csv"
-
-st.title("🍚 급식 규칙 찾기")
-
-
-@st.cache_data(ttl=3600)
-def load_baskets(url):
-    table = pd.read_csv(url, encoding="utf-8")
-    baskets = []
-    for line in table["메뉴"]:
-        names = set()
-        for dish in str(line).split("|"):
-            name = re.sub(r"\([^)]*\)", "", dish).strip()   # 괄호와 그 안의 내용은 제외한다
-            if name:
-                names.add(name)
-        if names:
-            baskets.append(sorted(names))
-    return baskets
-
-
-baskets = load_baskets(URL)
-n = len(baskets)
-single = Counter(item for basket in baskets for item in basket)           # 메뉴가 나온 날 수
-pair = Counter(c for basket in baskets for c in combinations(basket, 2))  # 두 메뉴가 함께 나온 날 수
-
-rows = []
-for (a, b), together in pair.items():
-    for x, y in [(a, b), (b, a)]:              # 한 쌍에서 두 방향의 규칙이 나온다
-        rows.append({"조건": x, "결과": y, "동시": together,
-                     "지지도": round(together / n, 3),
-                     "신뢰도": round(together / single[x], 3),
-                     "향상도": round((together / single[x]) / (single[y] / n), 2)})
-규칙 = pd.DataFrame(rows, columns=["조건", "결과", "동시", "지지도", "신뢰도", "향상도"])
-
-st.caption(f"급식 {n}일 · 메뉴 {len(single)}종 · 함께 나온 적이 있는 메뉴 쌍 {len(pair):,}개 · "
-           f"규칙 {len(규칙):,}개")
-
-기준 = st.radio("정렬", ["향상도 순", "신뢰도 순", "동시 순"], horizontal=True)
-메뉴 = st.selectbox("메뉴로 좁혀 보기", ["(전체)"] + sorted(single))
-보기 = 규칙 if 메뉴 == "(전체)" else 규칙[(규칙["조건"] == 메뉴) | (규칙["결과"] == 메뉴)]
-보기 = 보기.sort_values({"향상도 순": "향상도", "신뢰도 순": "신뢰도", "동시 순": "동시"}[기준],
-                    ascending=False, ignore_index=True)
-st.dataframe(보기, width="stretch", hide_index=True)
-
-top = 보기.sort_values("향상도", ascending=False).head(10).copy()
-top["규칙"] = top["조건"] + " → " + top["결과"]
-fig = px.bar(top, x="향상도", y="규칙", orientation="h", text="향상도")
-fig.update_layout(yaxis={"categoryorder": "total ascending"}, height=420)
-st.plotly_chart(fig, width="stretch")</pre></div>
-      <div class="codewrap code"><span class="label">두 번째 파일 — <button type="button" class="fname">requirements.txt</button></span><button class="copy-btn">복사</button><pre>streamlit
-pandas
-plotly</pre></div></details>
-    </li>
-    <li><span class="st">실습 ② — AI가 준 코드를 실행하고 화면을 읽는다</span>
-      <p>앱을 실행한 뒤 다음 순서로 확인합니다.</p>
-      <ul class="steps">
-        <li>표 위의 <b>급식 일수·메뉴 종류 수·메뉴 쌍의 수</b>를 적습니다.</li>
-        <li>'메뉴로 좁혀 보기'에서 <b>제육볶음</b>을 골라 배추김치와의 규칙을 찾습니다.</li>
-        <li><b>순대국</b>을 골라 깍두기와의 규칙을 확인합니다.</li>
-        <li>두 규칙의 값을 아래 표에 옮겨 적습니다.</li>
-        <li>도입 문제 1의 네 짝을 차례로 확인해 향상도를 비교합니다. 가장 큰 향상도를 보이는 짝을 찾습니다.</li>
-      </ul>
-    </li>
-  </ol>
-  <table class="daymap">
-    <thead><tr><th>앱이 표시한 값</th><th>동시</th><th>신뢰도</th><th>향상도</th></tr></thead>
-    <tbody>
-      <tr><td><b>규칙 A</b> 제육볶음 → 배추김치</td><td>4일</td><td>약 0.67</td><td>약 1.20</td></tr>
-      <tr><td><b>규칙 B</b> 순대국 → 깍두기</td><td>5일</td><td>약 0.83</td><td>약 8.07</td></tr>
-    </tbody>
-  </table>
-  <p class="mini">활동지는 <b>손계산을 위한 100일 데이터</b>, 앱은 <b>실제 급식 184일 데이터</b>를 사용하므로 일부 값이 다릅니다.</p>
-  <p>배추김치는 184일 가운데 102일 나옵니다. 아무 날이나 배추김치를 골라도 절반 넘게 맞습니다.</p>
-  <p>그래서 배추김치를 결과에 둔 규칙은 앞 메뉴가 무엇이든 신뢰도가 비교적 높게 나올 수 있습니다.</p>
-  <p>실제 184일 데이터에서 규칙 A의 신뢰도는 4 ÷ 6 ≈ 0.67이고 향상도는 약 1.20으로 1에 가깝습니다. <b>신뢰도만 보면 놓치기 쉬운 차이를 향상도가 보여 줍니다.</b></p>
-
-  <h3>실습 ③ — 우연을 걸러 내고, 함께 안 나오는 짝을 찾는다</h3>
-  <p>규칙 표를 보면 <b>동시에 나온 날이 1일뿐인 메뉴 쌍</b>이 매우 많습니다.</p>
-  <p>단 하루 함께 나온 것만으로도 규칙 표에는 올라가고, 두 메뉴가 각각 드물게 나온 메뉴라면 향상도도 크게 나타날 수 있습니다.</p>
-  <p>따라서 규칙을 읽기 전에 <b>최소 기준</b>을 정하고, 그보다 적게 함께 나온 규칙을 걸러 내야 합니다. 교과서 162쪽의 <b>최소 지지도</b>가 같은 역할을 합니다.</p>
-  <ol class="steps" start="3">
-    <li><span class="st">③ 개선 프롬프트 — 최소 기준과 함께 나온 적 없는 짝</span>
-      <div class="codewrap improve"><span class="label">③ 개선</span><button class="copy-btn">복사</button><pre>앞 코드에 이어서 두 가지를 더해 줘. 바뀐 main.py 전체를 다시 줘.
-- 최소 동시 일수를 1부터 10까지 슬라이더로 고르게 하고 기본값은 1로 해 줘.
-  고른 값보다 적게 겹친 규칙은 표에서 빼 줘.
-- 슬라이더를 움직이면 표에 남은 규칙이 몇 개인지 한 줄로 적어 줘.
-- 표 아래에 "함께 나온 적 없는 짝" 화면을 만들어 줘. 메뉴 하나를 고르면, 그 메뉴와 같은 날
-  한 번도 함께 나오지 않았으면서 혼자서는 열흘 이상 나온 메뉴를 나온 날이 많은 순으로 보여 주고,
-  고른 메뉴가 나온 날 수도 함께 적어 줘. 이 메뉴 고르기는 위의 좁혀 보기와 다른 이름으로 만들어 줘.</pre></div>
-      <details class="sample"><summary>선생님이 실행해 확인한 예시 코드</summary><p class="mini">여기까지 만든 <code>main.py</code> 전체입니다. 기존 파일을 통째로 바꾸어 저장합니다.</p><div class="codewrap code"><span class="label">main.py — 여기까지가 전체</span><button class="copy-btn">복사</button><pre># main.py — 급식 규칙 찾기: 같은 날 함께 나온 메뉴 쌍을 센다
-import re
-from collections import Counter
-from itertools import combinations
-
-import pandas as pd
-import plotly.express as px
-import streamlit as st
-
-URL = "https://raw.githubusercontent.com/it-teacher-go/data-share-/main/songtan_meals_184.csv"
-
-st.title("🍚 급식 규칙 찾기")
-
-
-@st.cache_data(ttl=3600)
-def load_baskets(url):
-    table = pd.read_csv(url, encoding="utf-8")
-    baskets = []
-    for line in table["메뉴"]:
-        names = set()
-        for dish in str(line).split("|"):
-            name = re.sub(r"\([^)]*\)", "", dish).strip()   # 괄호와 그 안의 내용은 제외한다
-            if name:
-                names.add(name)
-        if names:
-            baskets.append(sorted(names))
-    return baskets
-
-
-baskets = load_baskets(URL)
-n = len(baskets)
-single = Counter(item for basket in baskets for item in basket)           # 메뉴가 나온 날 수
-pair = Counter(c for basket in baskets for c in combinations(basket, 2))  # 두 메뉴가 함께 나온 날 수
-
-rows = []
-for (a, b), together in pair.items():
-    for x, y in [(a, b), (b, a)]:              # 한 쌍에서 두 방향의 규칙이 나온다
-        rows.append({"조건": x, "결과": y, "동시": together,
-                     "지지도": round(together / n, 3),
-                     "신뢰도": round(together / single[x], 3),
-                     "향상도": round((together / single[x]) / (single[y] / n), 2)})
-규칙 = pd.DataFrame(rows, columns=["조건", "결과", "동시", "지지도", "신뢰도", "향상도"])
-
-st.caption(f"급식 {n}일 · 메뉴 {len(single)}종 · 함께 나온 적이 있는 메뉴 쌍 {len(pair):,}개 · "
-           f"규칙 {len(규칙):,}개")
-
-기준 = st.radio("정렬", ["향상도 순", "신뢰도 순", "동시 순"], horizontal=True)
-메뉴 = st.selectbox("메뉴로 좁혀 보기", ["(전체)"] + sorted(single))
-최소동시 = st.slider("최소 동시 일수", 1, 10, 1)
-걸러낸규칙 = 규칙[규칙["동시"] &gt;= 최소동시]
-st.write(f"동시에 나온 날이 {최소동시}일 이상인 규칙은 {len(걸러낸규칙):,}개입니다.")
-
-보기 = 걸러낸규칙 if 메뉴 == "(전체)" else 걸러낸규칙[(걸러낸규칙["조건"] == 메뉴) | (걸러낸규칙["결과"] == 메뉴)]
-보기 = 보기.sort_values({"향상도 순": "향상도", "신뢰도 순": "신뢰도", "동시 순": "동시"}[기준],
-                    ascending=False, ignore_index=True)
-if 보기.empty:
-    st.info("조건에 맞는 규칙이 없습니다. 최소 동시 일수를 낮춰 봅니다.")
-else:
-    st.dataframe(보기, width="stretch", hide_index=True)
-    top = 보기.sort_values("향상도", ascending=False).head(10).copy()
-    top["규칙"] = top["조건"] + " → " + top["결과"]
-    fig = px.bar(top, x="향상도", y="규칙", orientation="h", text="향상도")
-    fig.update_layout(yaxis={"categoryorder": "total ascending"}, height=420)
-    st.plotly_chart(fig, width="stretch")
-
-st.subheader("함께 나온 적 없는 짝")
-고른메뉴 = st.selectbox("메뉴 고르기", sorted(single), key="없는짝")
-같이나온메뉴 = {y for (a, b) in pair for x, y in [(a, b), (b, a)] if x == 고른메뉴}
-없는짝 = [{"메뉴": 이름, "나온 날": 날수} for 이름, 날수 in single.items()
-        if 이름 != 고른메뉴 and 이름 not in 같이나온메뉴 and 날수 &gt;= 10]   # 혼자서는 열흘 이상 나온 메뉴만
-
-st.write(f"{고른메뉴} · 나온 날 {single[고른메뉴]}일 · 함께 나온 적 없는 메뉴 {len(없는짝)}종")
-if not 없는짝:
-    st.info("열흘 이상 나오면서 한 번도 함께 나오지 않은 메뉴가 없습니다.")
-else:
-    표 = pd.DataFrame(없는짝).sort_values("나온 날", ascending=False)
-    st.dataframe(표, width="stretch", hide_index=True)</pre></div></details>
-    </li>
-  </ol>
-  <p>앱을 실행한 뒤 다음을 확인합니다.</p>
-  <ul class="steps">
-    <li>슬라이더를 <b>1일</b>에 두고 남은 규칙 수를 적습니다.</li>
-    <li>슬라이더를 <b>5일</b>로 올리고 다시 적습니다.</li>
-    <li>두 값의 차이를 보며 <b>동시 일수가 적은 규칙이 얼마나 많이 걸러지는지</b> 확인합니다.</li>
-    <li>'함께 나온 적 없는 짝'에서 <b>배추김치</b>를 고르고 목록에 나온 메뉴를 적습니다.</li>
-    <li>같은 방법으로 <b>친환경현미밥</b>도 확인합니다.</li>
-    <li>이 결과에서 도입 문제 2의 답을 찾습니다.</li>
-  </ul>
-  <div class="callout mini">
-    <div class="h">✍️ 우리 학교 급식에서 찾은 것</div>
-    <p>두 목록에는 어떤 공통점이 있습니까?</p>
-    <p>그 공통점을 바탕으로 <b>급식실이 하루 식단을 짤 때 어떤 원칙을 지키고 있는지</b> 한 문장으로 적습니다.</p>
-    <p><input class="answer-cell" style="max-width:420px;text-align:left" aria-label="함께 나온 적 없는 짝에서 찾은 급식실의 방침" placeholder="예: 하루에 ○○는 한 종류만 나온다"></p>
-    <p>그다음 '메뉴로 좁혀 보기'에서 메뉴 하나를 더 골라, "이 메뉴가 나오는 날에는 저 메뉴가 늘 함께 나온다."라고 할 수 있는 짝을 찾아 <b>근거 숫자와 함께</b> 적습니다.</p>
-    <p><input class="answer-cell" style="max-width:420px;text-align:left" aria-label="메뉴로 좁혀 보기에서 찾은 특징" placeholder="메뉴 두 개와 동시·신뢰도·향상도"></p>
-  </div>
-
-  <h2>4. 정리 폼 — 우리 팀이 발견한 우리 학교 급식의 특징 세 가지</h2>
-  <p>3절에서 찾은 내용을 <b>정리 폼</b>에 옮겨 적습니다. 폼은 클래스룸 과제에 있으며 9차시와 같은 형식입니다.</p>
-  <p>정리할 특징은 세 가지입니다. 먼저 아래 표를 채운 뒤 폼에 옮겨 적습니다.</p>
-  <p><b>근거 숫자가 없는 특징은 발견이라기보다 추측에 가깝습니다.</b></p>
-  <p>다른 팀과 같은 특징을 찾아도 괜찮습니다. 중요한 것은 <b>무엇을 근거로 그렇게 판단했는지 설명하는 것</b>입니다.</p>
-  <table class="daymap">
-    <thead><tr><th>특징</th><th>무엇</th><th>근거 숫자</th></tr></thead>
-    <tbody>
-      <tr><td><b>함께 자주 나오는 짝</b></td><td></td><td></td></tr>
-      <tr><td><b>함께 나온 적 없는 짝</b></td><td></td><td></td></tr>
-      <tr><td><b>내가 찾은 특징 하나</b></td><td></td><td></td></tr>
-    </tbody>
-  </table>
-  <p class="mini">근거 숫자 칸에는 다음과 같이 적습니다.</p>
-  <ul class="steps">
-    <li><b>함께 자주 나오는 짝</b>: 동시 일수·신뢰도·향상도</li>
-    <li><b>함께 나온 적 없는 짝</b>: 두 메뉴의 등장 일수와 동시 0일</li>
-  </ul>
-  <p>폼 앞부분의 퀴즈 세 문제는 오늘 배운 세 숫자를 확인하는 문제입니다. 점수는 평가에 사용하지 않습니다.</p>
-  <div class="callout data">
-    <div class="h">📌 다음 시간까지</div>
-    <p>정리 폼을 수업 시간 안에 제출하지 못했다면 오늘 안에 제출합니다.</p>
-    <p>다음 시간 첫 5분에는 반에서 나온 특징 가운데 하나를 함께 확인합니다.</p>
-  </div>
-
+  
   <h2>5. 정리 — 교과서와 급식이 만나는 대목</h2>
   <p>오늘 배운 세 숫자를 한 문장씩 정리하면 다음과 같습니다.</p>
   <ul class="steps">
@@ -593,11 +326,13 @@ else:
     <li><b>신뢰도</b>는 앞 항목이 나왔을 때 뒤 항목도 <b>얼마나 자주 나타나는가</b>를 말합니다.</li>
     <li><b>향상도</b>는 앞 항목을 알았을 때 뒤 항목을 맞힐 가능성이 <b>평소보다 몇 배 높아지는가</b>를 말합니다.</li>
   </ul>
+  <!--
   <div class="callout mini">
     <div class="h">✍️ 처음 질문에 답하기</div>
     <p>문제 1 · 우리 학교 급식에서 가장 강하게 붙어 다니는 두 메뉴는 <input class="answer-cell" style="max-width:260px;text-align:left" aria-label="도입 문제 1의 답" placeholder="메뉴 두 개와 향상도"></p>
     <p>문제 2 · 184일 동안 같은 날 한 번도 나온 적이 없는 짝은 <input class="answer-cell" style="max-width:260px;text-align:left" aria-label="도입 문제 2의 답" placeholder="메뉴 두 개와 각각 나온 날 수"></p>
   </div>
+  -->
   <div class="callout warn">
     <div class="h">⚠️ 연관 분석에서 주의할 점 둘</div>
     <p><b>하나. 신뢰도가 높다고 해서 곧바로 강한 규칙은 아닙니다.</b></p>
@@ -608,9 +343,9 @@ else:
   </div>
   <p>오늘은 급식 기록을 날짜별로 묶어 <b>함께 자주 나오는 짝</b>과 <b>한 번도 함께 나오지 않은 짝</b>을 찾았습니다.</p>
   <p>그리고 찾은 규칙마다 근거 숫자를 붙여 <b>우리 학교 급식의 특징</b>으로 정리했습니다.</p>
-  <p>9차시와 이번 차시에서는 미리 정해진 정답이 없는 데이터를 다루었습니다.</p>
-  <p>다음 시간에는 다시 <b>정답이 있는 예측 문제</b>로 돌아갑니다.</p>
-  <p>7차시에서는 숫자를 예측했다면, 다음 시간에는 <b>'예'와 '아니요'를 예측합니다.</b></p>
+  <p>지난 차시와 이번 차시에서는 미리 정해진 정답이 없는 데이터를 다루었습니다.</p>
+  <p>연관 분석이 다 끝나면 다음 시간에는 다시 <b>정답이 있는 예측 문제</b>로 돌아갑니다.</p>
+  <p>다음 시간에는 <b>'예'와 '아니요'를 예측합니다.</b></p>
 
 
   <h2>🎒 오늘의 체크</h2>
@@ -619,7 +354,7 @@ else:
     <li>규칙에는 방향이 있어 앞뒤를 바꾸면 신뢰도가 달라진다는 것을 설명할 수 있다.</li>
     <li>신뢰도가 높아도 향상도가 1 근처면 정보가 없는 규칙이라는 것을 설명할 수 있다.</li>
     <li>앱을 만들어 함께 자주 나오는 짝과 함께 나온 적 없는 짝을 찾았다.</li>
-    <li>특징 세 가지를 근거 숫자와 함께 정리 폼에 적었다.</li>
+    <li>특징 세 가지를 근거 숫자와 함께 정리를 적었다.</li>
   </ul>
 
   <h2>📚 오늘의 용어</h2>
@@ -634,12 +369,6 @@ else:
     <tr><td class="term">등장률</td><td>어떤 메뉴가 나온 날 수를 전체 일수로 나눈 값. 향상도의 비교 기준</td></tr>
     <tr><td class="term">최소 지지도</td><td>규칙 후보로 남길 최소 등장 비율(교과서 162쪽). 이 앱에서는 최소 동시 일수로 대신함</td></tr>
   </table>
-  <p class="glossary-more"><a href="glossary.html">📚 전체 용어사전 보기 →</a></p>
-
-  <div class="pager">
-    <a class="prev" href="lesson09.html"><div class="dir">← 이전</div><div class="tt">9차시 · 군집 — 영화 유형 나누기</div></a>
-    <a class="next" href="lesson11.html"><div class="dir">다음 →</div><div class="tt">11차시 · 분류</div></a>
-  </div>
 </main>
 </div>
 
