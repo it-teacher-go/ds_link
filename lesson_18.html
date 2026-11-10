@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>18차시 · 데이터 윤리 · 데이터 과학 송탄고</title>
+<link rel="stylesheet" href="assets/style.css?v=tb16">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+<style>
+/* ===== 14차시 데이터 윤리 페이지 전용 스타일 — 13차시 위젯(.sch/.sim)과 같은 결 =====
+   셀렉터는 main.eth 아래로만 한정한다. 팔레트는 공용 변수와 어울리는 진한 톤(대비 4.5:1 이상).
+   문구는 건드리지 않고 카드·배지·애니메이션만 얹는다. 라벨 문자열은 CSS content로 그린다. */
+main.eth{--w-ink:#2b2418;--w-soft:#6b5836;--w-line:#eadfc4;--w-ring:0 0 0 3px rgba(76,141,246,.38);--w-grad:linear-gradient(120deg,#b45309 0%,#c2417a 55%,#6d3fb5 100%);--w-grad2:linear-gradient(120deg,#1f7f7a 0%,#2f6bd6 100%);--w-shadow:0 2px 10px rgba(120,90,20,.08),0 1px 2px rgba(120,90,20,.06)}
+main.eth .l14-btn{font-family:var(--font)}
+main.eth .l14-btn:focus-visible,main.eth .l14-items li:focus-visible,main.eth .quiz .opt:focus-visible,main.eth .l14-fig svg:focus-visible{outline:none;box-shadow:var(--w-ring)}
+@keyframes l14Pop{0%{opacity:0;transform:scale(.3)}70%{opacity:1;transform:scale(1.35)}100%{opacity:1;transform:scale(1)}}
+@keyframes l14Draw{to{stroke-dashoffset:0}}
+@keyframes l14ArrowIn{from{stroke-dasharray:100 100;stroke-dashoffset:100}to{stroke-dasharray:100 100;stroke-dashoffset:0}}
+@keyframes l14March{from{stroke-dashoffset:14}to{stroke-dashoffset:0}}
+@keyframes l14Pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes l14Badge{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+@keyframes l14Glow{0%{box-shadow:0 0 0 0 rgba(84,162,75,.55)}100%{box-shadow:0 0 0 16px rgba(84,162,75,0)}}
+
+/* ---- 스크롤 등장(자바스크립트가 있을 때만 숨겼다가 보여 준다) ---- */
+main.eth.l14-js .l14-reveal{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1)}
+main.eth.l14-js .l14-reveal.in{opacity:1;transform:none}
+main.eth.l14-js .l14-probs tr:nth-child(2).l14-reveal{transition-delay:.12s}
+main.eth.l14-js .l14-probs tr:nth-child(3).l14-reveal{transition-delay:.24s}
+
+/* ---- §1 세 가지 윤리 문제: 표 구조는 그대로, 보이기는 세 장의 컬러 카드 ---- */
+main.eth table.l14-probs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0;border-collapse:separate;border-spacing:0;font-size:.9rem}
+main.eth table.l14-probs thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+main.eth table.l14-probs tbody{display:contents}
+main.eth table.l14-probs tr{--pc:#b45309;--pc-soft:#fff3d6;display:flex;flex-direction:column;min-width:0;border:1px solid var(--w-line);border-radius:16px;background:#fff;overflow:hidden;box-shadow:var(--w-shadow);transition:box-shadow .18s,border-color .18s}
+main.eth table.l14-probs tr:nth-child(2){--pc:#c2417a;--pc-soft:#fff0f5}
+main.eth table.l14-probs tr:nth-child(3){--pc:#6d3fb5;--pc-soft:#f1ebfb}
+main.eth table.l14-probs tr:hover{border-color:var(--pc);box-shadow:0 10px 22px rgba(120,90,20,.16)}
+main.eth table.l14-probs td{display:block;border:none;min-width:0;white-space:normal;line-height:1.6;color:var(--w-ink)}
+main.eth table.l14-probs td:first-child{display:flex;align-items:center;gap:9px;padding:12px 16px;background:var(--pc);color:#fff;font-size:1rem}
+main.eth table.l14-probs td:first-child b{font-weight:800}
+main.eth table.l14-probs td:first-child::before{content:"⚖️";flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.22);font-size:1.1rem}
+main.eth table.l14-probs tr:nth-child(2) td:first-child::before{content:"💬"}
+main.eth table.l14-probs tr:nth-child(3) td:first-child::before{content:"🔑"}
+main.eth table.l14-probs td:nth-child(n+2)::before{display:block;font-size:.72rem;font-weight:800;letter-spacing:.05em;color:var(--pc);margin-bottom:2px}
+main.eth table.l14-probs td:nth-child(2){flex:1;padding:12px 16px;background:#fff}
+main.eth table.l14-probs td:nth-child(2)::before{content:"무엇이 잘못되나"}
+main.eth table.l14-probs td:nth-child(3){margin-top:auto;padding:10px 16px 14px;background:var(--pc-soft);border-top:1px solid var(--w-line)}
+main.eth table.l14-probs td:nth-child(3)::before{content:"우리 실습과의 접점"}
+
+/* ---- §2 네 장면: 번호 배지 + 왼쪽 컬러 바 + 연결선 ---- */
+main.eth .l14-scenes{position:relative;margin:18px 0 8px;padding-left:38px;counter-reset:l14s}
+main.eth .l14-scene{--sc:#b45309;position:relative;margin:0 0 18px;padding:14px 18px 6px;border-radius:16px;background:#fff;border:1px solid var(--w-line);border-left:5px solid var(--sc);box-shadow:var(--w-shadow)}
+main.eth .l14-scene:nth-child(2){--sc:#1f7f7a}
+main.eth .l14-scene:nth-child(3){--sc:#c2417a}
+main.eth .l14-scene:nth-child(4){--sc:#6d3fb5}
+main.eth .l14-scene::before{counter-increment:l14s;content:counter(l14s);position:absolute;left:-43px;top:14px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--sc);color:#fff;font-weight:800;font-size:.85rem;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+main.eth .l14-scene:not(:last-child)::after{content:"";position:absolute;left:-29px;top:48px;bottom:-30px;width:2px;border-radius:2px;background:linear-gradient(var(--sc),#eadfc4)}
+main.eth .l14-scene h3{margin:0 0 6px;font-size:1.08rem;line-height:1.4;color:var(--sc)}
+main.eth .l14-scene p{margin:8px 0 10px}
+main.eth .l14-scene details.glossary{margin:10px 0 12px;border-radius:14px}
+
+/* ---- 그림 카드(장면 2·3 공통) ---- */
+main.eth .l14-fig{position:relative;margin:12px 0 4px;padding:8px 8px 6px;border-radius:14px;background:linear-gradient(180deg,#fffdf7,#fff);border:1px solid #f3ecd9}
+main.eth .l14-scroll{overflow-x:auto}
+main.eth .l14-fig svg{display:block;width:100%;height:auto;cursor:pointer;border-radius:8px}
+main.eth .l14-route svg{min-width:640px}
+main.eth .l14-loop svg{min-width:600px}
+main.eth .l14-cap{text-align:center;font-size:.85rem;color:var(--text-soft);margin:6px 0 14px}
+main.eth .l14-ctl{display:none;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center;margin:6px 0 2px}
+main.eth.l14-js .l14-ctl{display:flex}
+main.eth .l14-btn{border:1.5px solid var(--w-line);border-radius:999px;padding:5px 13px;min-height:30px;background:#fff;color:var(--w-ink);font-size:.8rem;font-weight:700;cursor:pointer;transition:border-color .15s,color .15s,background .15s,transform .1s,box-shadow .15s}
+main.eth .l14-btn:hover{border-color:#c2417a;color:#a2255f;background:#fff5f9;transform:translateY(-1px);box-shadow:0 3px 8px rgba(194,65,122,.18)}
+main.eth .l14-btn:active{transform:scale(.97)}
+main.eth .l14-btn.l14-primary{border-color:transparent;background:var(--w-grad);color:#fff;box-shadow:0 3px 10px rgba(194,65,122,.28)}
+main.eth .l14-btn.l14-primary:hover{color:#fff;box-shadow:0 5px 14px rgba(194,65,122,.36)}
+main.eth .l14-replay::before{content:"▶ 다시 보기"}
+main.eth .l14-play::before{content:"⏸ 정지"}
+main.eth .l14-loop.paused .l14-play::before{content:"▶ 재생"}
+main.eth .l14-step::before{content:"다음 단계 ▸"}
+
+/* 장면 2: 위치 기록 네 점이 차례로 이어져 동선이 드러난다(마스크 선을 그려 가며 점선을 드러낸다) */
+main.eth .l14-route .l14-mk{stroke-dasharray:140;stroke-dashoffset:0}
+main.eth .l14-route .l14-pt,main.eth .l14-route .l14-fin{transform-box:fill-box;transform-origin:center}
+main.eth .l14-route.l14-anim .l14-mk{stroke-dashoffset:140}
+main.eth .l14-route.l14-anim .l14-pt,main.eth .l14-route.l14-anim .l14-fin{opacity:0}
+main.eth .l14-route.play .l14-mk{animation:l14Draw .55s ease-out forwards}
+main.eth .l14-route.play .l14-pt{animation:l14Pop .5s cubic-bezier(.2,.8,.2,1) forwards}
+main.eth .l14-route.play .l14-fin{animation:l14Pop .6s cubic-bezier(.2,.8,.2,1) forwards}
+main.eth .l14-route.play .l14-d0{animation-delay:.1s}
+main.eth .l14-route.play .l14-d1{animation-delay:.55s}
+main.eth .l14-route.play .l14-d2{animation-delay:1.05s}
+main.eth .l14-route.play .l14-d3{animation-delay:1.5s}
+main.eth .l14-route.play .l14-d4{animation-delay:2s}
+main.eth .l14-route.play .l14-d5{animation-delay:2.45s}
+main.eth .l14-route.play .l14-d6{animation-delay:2.95s}
+main.eth .l14-route.play .l14-d7{animation-delay:3.5s}
+
+/* 장면 3: 네 상자가 순서대로 켜지고 화살표가 돈다 */
+main.eth .l14-loop .l14-node,main.eth .l14-loop .l14-core{transform-box:fill-box;transform-origin:center}
+main.eth .l14-loop .l14-node,main.eth .l14-loop .l14-arrow,main.eth .l14-loop .l14-warn,main.eth .l14-loop .l14-core{transition:opacity .4s}
+main.eth .l14-loop .l14-node rect{transition:fill .35s,stroke .35s}
+main.eth .l14-loop.l14-anim .l14-node{opacity:.42}
+main.eth .l14-loop.l14-anim .l14-node.on{opacity:1}
+main.eth .l14-loop .l14-node.on rect{fill:#fff3d6;stroke:#e8930c;stroke-width:2.5}
+main.eth .l14-loop .l14-node.cur{animation:l14Pulse .6s ease}
+main.eth .l14-loop .l14-node.cur rect{filter:drop-shadow(0 4px 10px rgba(232,147,12,.5))}
+main.eth .l14-loop.l14-anim .l14-arrow{opacity:.16}
+main.eth .l14-loop.l14-anim .l14-arrow.on{opacity:1;stroke-dasharray:8 6;animation:l14ArrowIn .5s ease-out,l14March .6s linear .5s infinite}
+main.eth .l14-loop.l14-anim .l14-warn,main.eth .l14-loop.l14-anim .l14-core{opacity:.22}
+main.eth .l14-loop.l14-anim .l14-warn.on,main.eth .l14-loop.l14-anim .l14-core.on{opacity:1}
+main.eth .l14-loop .l14-core.on{animation:l14Pulse .8s ease}
+
+/* ---- §3 셀프 점검: 큰 체크 카드 + 진행 바 + 완료 배지 ---- */
+main.eth .l14-self{border-radius:16px;border-left-width:5px;padding:16px 18px 14px;box-shadow:var(--w-shadow)}
+main.eth .l14-self.l14-complete{animation:l14Glow 1s ease}
+main.eth .l14-self .h{font-size:1rem}
+main.eth .l14-prog{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 12px}
+main.eth .l14-bar{flex:1 1 140px;height:10px;border-radius:999px;background:#d3e6cd;overflow:hidden}
+main.eth .l14-bar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#3d7a37,#54a24b);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+main.eth .l14-cnt{font-weight:800;font-size:.86rem;color:#2f6a2a;font-variant-numeric:tabular-nums;min-width:2.4em}
+main.eth .l14-done{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:999px;background:linear-gradient(120deg,#3d7a37,#54a24b);color:#fff;font-weight:800;font-size:.8rem;animation:l14Badge .5s cubic-bezier(.2,.8,.2,1)}
+main.eth .l14-done::before{content:"🎉"}
+main.eth .l14-done[hidden]{display:none}
+main.eth .l14-items{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+main.eth .l14-items li{position:relative;margin:0;padding:12px 14px 12px 52px;border-radius:14px;background:#fff;border:1.5px solid #cfe5c8;cursor:pointer;user-select:none;line-height:1.6;transition:background .2s,border-color .2s,transform .12s}
+main.eth .l14-items li:hover{border-color:#54a24b;transform:translateY(-1px)}
+main.eth .l14-items li::before{content:"";position:absolute;left:14px;top:14px;width:26px;height:26px;box-sizing:border-box;border-radius:8px;border:2px solid #54a24b;background:#fff;color:#fff;font-weight:800;font-size:15px;line-height:22px;text-align:center;transition:background .2s}
+main.eth .l14-items li.done{background:#eef6e8;border-color:#54a24b;color:var(--w-soft)}
+main.eth .l14-items li.done::before{content:"✓";background:#54a24b;animation:checkpop .28s ease}
+main.eth .l14-items li b{display:inline-block;padding:0 10px;border-radius:999px;background:#fff3d6;color:#7a4a08;font-weight:800;line-height:1.55;margin-right:2px}
+main.eth .l14-items li.done b{background:#3d7a37;color:#fff}
+
+/* ---- §4 교과서 인용 상자: 여백·리듬 정리 ---- */
+main.eth .tbquote{border-radius:16px;border-left-width:5px;padding:16px 20px;margin:20px 0 16px;box-shadow:var(--w-shadow);background:linear-gradient(180deg,#fffdf6,#fff)}
+main.eth .tbquote .h{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-bottom:8px}
+main.eth .tbquote .h .src{margin-left:0;padding:1px 9px;border-radius:999px;background:#fff3d6;color:#7a4a08;font-size:.74rem;font-weight:700}
+main.eth .tbquote .q{margin:6px 0;padding-left:12px;border-left:2px solid var(--w-line);line-height:1.75}
+main.eth .tbquote .q .src{color:var(--muted);font-size:.8rem}
+main.eth .tbquote .t{margin-top:10px;padding-top:10px;border-top:1px dashed var(--w-line);color:var(--w-soft)}
+
+/* ---- §6 확인 문제: 13차시 시뮬레이터와 같은 카드 결(옵션 버튼은 공용 규칙 유지) ---- */
+main.eth .quiz{border-radius:16px;border-color:var(--w-line);box-shadow:var(--w-shadow);padding:18px 20px;margin:18px 0}
+main.eth .quiz .qn{border:none;padding:2px 11px;background:var(--w-grad);color:#fff}
+main.eth .quiz .fb{border-radius:0 12px 12px 0}
+main.eth .quiz details.reveal{border-radius:12px}
+
+@media (max-width:720px){
+  main.eth table.l14-probs{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  main.eth .l14-scenes{padding-left:30px}
+  main.eth .l14-scene{padding:12px 14px 4px}
+  main.eth .l14-scene::before{left:-38px;top:12px;width:26px;height:26px;font-size:.76rem}
+  main.eth .l14-scene:not(:last-child)::after{left:-26px;top:42px}
+  main.eth .l14-fig{padding:6px 6px 4px}
+}
+@media (prefers-reduced-motion:reduce){
+  main.eth *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  main.eth.l14-js .l14-reveal{opacity:1;transform:none}
+  main.eth .l14-route.l14-anim .l14-mk{stroke-dashoffset:0}
+  main.eth .l14-route.l14-anim .l14-pt,main.eth .l14-route.l14-anim .l14-fin{opacity:1}
+}
+@media print{
+  main.eth *{animation:none!important;transition:none!important}
+  main.eth.l14-js .l14-reveal{opacity:1;transform:none}
+  main.eth .l14-route.l14-anim .l14-mk{stroke-dashoffset:0}
+  main.eth .l14-route.l14-anim .l14-pt,main.eth .l14-route.l14-anim .l14-fin{opacity:1}
+  main.eth .l14-loop.l14-anim .l14-node,main.eth .l14-loop.l14-anim .l14-arrow,main.eth .l14-loop.l14-anim .l14-warn,main.eth .l14-loop.l14-anim .l14-core{opacity:1}
+  main.eth .l14-loop.l14-anim .l14-arrow{stroke-dasharray:none}
+  main.eth .l14-ctl{display:none!important}
+  main.eth .l14-route svg,main.eth .l14-loop svg{min-width:0}
+  main.eth table.l14-probs td:first-child,main.eth table.l14-probs td:nth-child(3),main.eth .l14-scene::before,main.eth .l14-done,main.eth .l14-bar i,main.eth .quiz .qn,main.eth .l14-items li.done::before{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  main.eth .l14-scene,main.eth table.l14-probs tr,main.eth .quiz,main.eth .l14-self,main.eth .tbquote{break-inside:avoid;box-shadow:none}
+}
+</style>
+<link rel="stylesheet" href="assets/review.css">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="#"><span class="chick">🧭</span> 데이터 과학 <span class="a">송탄고</span></a>
+  <span class="spacer"></span>
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main class="eth">
+  <span class="eyebrow">Ⅰ·Ⅳ. 데이터 과학의 이해 × 프로젝트 · 18차시</span>
+  <h1>데이터 윤리 · <span class="a">내 실습 점검하기</span></h1>
+  <div class="under"></div>
+
+  <div class="quote">
+    <div class="q">"윤리란, 할 권리가 있는 것과 하는 것이 옳은 것의 차이를 아는 것이다."</div>
+    <span class="by">포터 스튜어트(미국 대법관)의 말로 전해집니다. 할 수 있는 분석과 해도 되는 분석은 다릅니다.</span>
+    <span class="who"><img src="img/people/stewart.jpg" alt="포터 스튜어트" loading="lazy" width="54" height="54"><span><b>포터 스튜어트</b>(1915~1985)는 미국 연방대법원 대법관입니다. 도청 사건 판결에서 헌법이 보호하는 것은 장소가 아니라 사람이라며 사생활 보호의 기준을 넓힌 것으로 유명합니다.<span class="cred">사진: Robert S. Oakes · 퍼블릭 도메인(위키미디어 공용)</span></span></span>
+  </div>
+
+  <p class="lead">이번에는 코드를 실행하기 전에 던져야 할 질문을 생각해 봅니다. <b>‘이 코드를 실행해도 될까? 그 결과를 공개해도 괜찮을까?’</b></p>
+  <p>아마존은 2014년부터 지원자의 이력서를 AI로 평가하는 도구를 개발했습니다. 학습에 사용한 지난 10년간의 이력서는 대부분 남성 지원자의 것이었습니다. 이 데이터로 학습한 도구는 여성과 관련된 표현이 들어간 이력서에 낮은 점수를 주었고, 아마존은 결국 도구를 폐기했습니다(<a href="https://www.technologyreview.com/2018/10/10/139858/amazon-ditched-ai-recruitment-software-because-it-was-biased-against-women/" target="_blank" rel="noopener">보도 보기</a>).</p>
+  <p>이처럼 데이터를 잘못 다루면 누군가가 불이익을 받을 수 있습니다. 이번 시간에는 데이터 윤리의 세 가지 문제를 살펴보고, 이를 기준으로 <b>이번 학기의 실습</b>을 다시 점검합니다.</p>
+
+  <h2>0. 오늘의 목표</h2>
+  <p>인증키를 어디에 보관할지, 데이터의 출처를 어떻게 밝힐지, 누군가의 정보가 담긴 데이터를 공개해도 될지 판단하는 일은 모두 데이터 윤리와 연결됩니다. 이번 학기 실습에서 우리는 어떻게 판단했는지 돌아봅니다.</p>
+  <ul class="steps">
+    <li><b>데이터 편향성·혐오 표현·데이터 소유권</b>을 구분하고, 각각 어떤 문제인지 설명할 수 있다.</li>
+    <li>이번 학기 실습에서 세 가지 윤리 문제와 관련된 장면을 찾고, 당시 내 판단의 근거를 설명할 수 있다.</li>
+    <li>앱을 공개하기 전에 <b>인증키·데이터 출처·개인정보</b>를 점검하고, 공개해도 되는지 스스로 판단할 수 있다.</li>
+  </ul>
+
+  <h2>1. 데이터 윤리의 세 가지 문제 이해하기</h2>
+  <div class="tbquote">
+    <div class="h">📖 교과서 읽기 <span class="src">『데이터 과학(삼양)』 38·39쪽, (YBM) 63</span></div>
+    <p class="q">"수집된 데이터의 분포가 고르지 못하고, 특정한 지역, 연령, 성별 등에 치우쳐 있을 경우 데이터에 편향성이 있다고 한다." <span class="src">(38쪽)</span></p>
+    <p class="q">"실제 현실을 대표하지 못하고 특정한 방향으로 치우쳐 있는 데이터를 가지고 모델을 만들면, 특정 대상에게 유리하거나 불리한 모델이 만들어질 수 있다." <span class="src">(38쪽)</span></p>
+    <p class="q">"학교 수업 중에 생성된 데이터는 학생의 것일까? 학교의 것일까? 서비스를 만든 기업의 것일까?" <span class="src">(39쪽)</span></p>
+    <p class="t">데이터의 치우침은 모델의 결과에도 영향을 줄 수 있습니다. 이와 함께 데이터를 누가, 어떤 목적으로 수집·이용·공개할 수 있는지도 확인해야 합니다.</p>
+  </div>
+  <p>교과서에서 다루는 데이터 윤리 문제는 다음 세 가지입니다. 어느 경우든 데이터를 다루는 방식이 사람에게 피해를 줄 수 있다는 점에 주목합니다.</p>
+  <table class="daymap l14-probs">
+    <thead><tr><th>문제</th><th>어떤 문제인가</th><th>우리 실습과의 연결</th></tr></thead>
+    <tbody>
+      <tr><td><b>데이터 편향성</b></td><td>치우친 데이터로 만든 모델이 특정 대상에게 불리하게 작동할 수 있다</td><td>영화 관객 수 예측 모델의 스크린 수 변수</td></tr>
+      <tr><td><b>혐오 표현</b></td><td>인공지능이 사람들이 쓴 혐오 표현을 그대로 학습한다</td><td>우리가 사용하는 AI 챗봇의 학습 데이터</td></tr>
+      <tr><td><b>데이터 소유권</b></td><td>내가 만든 데이터를 누가 소유하고 판매할 수 있는지 불분명하다</td><td>수업 중 설문 폼에 제출한 응답의 소유권</td></tr>
+    </tbody>
+  </table>
+  <p>혐오 표현의 구체적인 사례는 교과서 38~39쪽에서 살펴봅니다. 데이터 편향성은 아래 <b>장면 3</b>에서, 데이터 소유권은 <b>4절 모둠 토의</b>에서 우리 실습과 연결해 생각해 봅니다.</p>
+
+  <h2>2. 실습에서 윤리 문제 찾기</h2>
+  <p>지금까지의 실습에서 윤리적 판단이 필요했던 네 장면을 살펴봅니다. 각 장면을 읽으며 ‘그때 나는 어떻게 했을까?’를 떠올려 봅니다.</p>
+
+  <div class="l14-scenes">
+  <section class="l14-scene">
+  <h3>장면 1 — 인증키 안전하게 보관하기</h3>
+  <p>2·5차시에서는 API 인증키를 코드와 분리해 비밀 금고에 보관했습니다. 인증키를 코드에 적은 채 공개하면 다른 사람이 내 키로 요청해 호출 한도를 소진하거나, 그 키에 허용된 기능을 사용할 수 있습니다.</p>
+  <p>이미 공개한 키는 코드에서 지우는 것만으로 끝내지 않습니다. 해당 서비스에서 키를 폐기한 뒤 새로 발급받습니다.</p>
+  <details class="glossary">
+    <summary>더 알아보기 — 공개용 키와 비공개용 키 구분하기</summary>
+    <div class="gin">
+      <p>키의 역할과 권한은 서비스마다 다르므로 제공 기관의 안내를 확인합니다. 같은 서비스에서도 공개할 수 있는 키와 비공개로 보관해야 하는 키가 구분됩니다. 공개할 수 있는 키라도 데이터 접근 권한이 자동으로 설정되는 것은 아닙니다.</p>
+    </div>
+  </details>
+
+  </section>
+  <section class="l14-scene">
+  <h3>장면 2 — 개인을 알아볼 수 있는지 확인하기</h3>
+  <p>급식 식단과 개인의 위치 기록은 공개할 때 무엇을 다르게 살펴야 할까요? 수업에서 사용한 학교별 급식 식단에는 개인별 섭취 기록이 없습니다. 반면 한 사람의 이동 기록은 다른 정보와 연결하면 누구의 기록인지 알아볼 수 있는 경우가 있습니다.</p>
+  <p><b>위치 데이터라고 모두 개인정보인 것은 아닙니다.</b> 다만 그 정보만으로는 특정 개인을 알아볼 수 없어도, 다른 정보와 쉽게 결합해 알아볼 수 있다면 개인정보에 해당합니다.</p>
+  <details class="glossary">
+    <summary>근거 확인 — 개인정보 보호법 제2조</summary>
+    <div class="gin">
+      <p>제2조 제1호 나목은 “해당 정보만으로는 특정 개인을 알아볼 수 없더라도 다른 정보와 쉽게 결합하여 알아볼 수 있는 정보”를 개인정보에 포함합니다.</p>
+      <p><b>쉽게 결합할 수 있는지</b> 판단할 때는 다른 정보를 구할 수 있는지, 개인을 알아보는 데 어느 정도의 시간·비용·기술이 필요한지 등을 합리적으로 고려합니다. 따라서 이름을 지웠는지만 볼 것이 아니라, 다른 정보와 연결했을 때 특정 개인을 알아볼 수 있는지도 살펴야 합니다.</p>
+      <p><a href="https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B2%95/%EC%A0%9C2%EC%A1%B0" target="_blank" rel="noopener">국가법령정보센터 · 제2조 원문</a> — 2026. 9. 11. 시행본 확인(2026. 9. 13.).</p>
+    </div>
+  </details>
+  <details class="glossary">
+    <summary>🔬 그림으로 비교하기 — 급식 식단과 개인 위치 기록</summary>
+    <div class="gin">
+  <div class="l14-fig l14-route">
+  <div class="l14-scroll">
+    <svg tabindex="0" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="학교 단위 급식 식단과, 이어 붙이면 동선이 드러나는 개인 위치 기록의 대조">
+      <defs>
+        <marker id="arRed14b" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e45756"/></marker>
+        <!-- 동선 그리기용 마스크: 흰 선을 그려 가며 아래 점선을 드러낸다 -->
+        <mask id="l14m1" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="300"><line class="l14-mk l14-d1" x1="478" y1="107" x2="574" y2="80" stroke="#fff" stroke-width="18" stroke-linecap="square"/></mask>
+        <mask id="l14m2" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="300"><line class="l14-mk l14-d3" x1="592" y1="81" x2="670" y2="142" stroke="#fff" stroke-width="18" stroke-linecap="square"/></mask>
+        <mask id="l14m3" maskUnits="userSpaceOnUse" x="0" y="0" width="800" height="300"><line class="l14-mk l14-d5" x1="672" y1="158" x2="610" y2="216" stroke="#fff" stroke-width="18" stroke-linecap="square"/></mask>
+      </defs>
+      <!-- 왼쪽 패널: 급식 식단 -->
+      <text x="200" y="34" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2d3a">급식 식단 — 학교 단위</text>
+      <rect x="70" y="54" width="100" height="30" fill="#fdf8ef" stroke="#f0e2bc"/>
+      <rect x="170" y="54" width="70" height="30" fill="#fdf8ef" stroke="#f0e2bc"/>
+      <rect x="240" y="54" width="120" height="30" fill="#fdf8ef" stroke="#f0e2bc"/>
+      <text x="120" y="74" text-anchor="middle" font-size="12.5" font-weight="800" fill="#7a6a3f">날짜</text>
+      <text x="205" y="74" text-anchor="middle" font-size="12.5" font-weight="800" fill="#7a6a3f">식사</text>
+      <text x="300" y="74" text-anchor="middle" font-size="12.5" font-weight="800" fill="#7a6a3f">메뉴</text>
+      <rect x="70" y="84" width="100" height="30" fill="#ffffff" stroke="#f0e2bc"/>
+      <rect x="170" y="84" width="70" height="30" fill="#ffffff" stroke="#f0e2bc"/>
+      <rect x="240" y="84" width="120" height="30" fill="#ffffff" stroke="#f0e2bc"/>
+      <rect x="70" y="114" width="100" height="30" fill="#ffffff" stroke="#f0e2bc"/>
+      <rect x="170" y="114" width="70" height="30" fill="#ffffff" stroke="#f0e2bc"/>
+      <rect x="240" y="114" width="120" height="30" fill="#ffffff" stroke="#f0e2bc"/>
+      <rect x="70" y="144" width="100" height="30" fill="#ffffff" stroke="#f0e2bc"/>
+      <rect x="170" y="144" width="70" height="30" fill="#ffffff" stroke="#f0e2bc"/>
+      <rect x="240" y="144" width="120" height="30" fill="#ffffff" stroke="#f0e2bc"/>
+      <text x="120" y="104" text-anchor="middle" font-size="12" fill="#c0b8a4">…</text>
+      <text x="205" y="104" text-anchor="middle" font-size="12" fill="#c0b8a4">…</text>
+      <text x="300" y="104" text-anchor="middle" font-size="12" fill="#c0b8a4">…</text>
+      <text x="120" y="134" text-anchor="middle" font-size="12" fill="#c0b8a4">…</text>
+      <text x="205" y="134" text-anchor="middle" font-size="12" fill="#c0b8a4">…</text>
+      <text x="300" y="134" text-anchor="middle" font-size="12" fill="#c0b8a4">…</text>
+      <text x="120" y="164" text-anchor="middle" font-size="12" fill="#c0b8a4">…</text>
+      <text x="205" y="164" text-anchor="middle" font-size="12" fill="#c0b8a4">…</text>
+      <text x="300" y="164" text-anchor="middle" font-size="12" fill="#c0b8a4">…</text>
+      <text x="215" y="214" text-anchor="middle" font-size="12.5" font-weight="700" fill="#54a24b">어느 학생이 먹었는지에 대한 정보가 없다</text>
+      <!-- 패널 구분선 -->
+      <line x1="400" y1="24" x2="400" y2="280" stroke="#f0e2bc" stroke-width="2"/>
+      <!-- 오른쪽 패널: 개인 위치 기록 -->
+      <text x="605" y="34" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2d3a">개인 위치 기록 — 이어 붙이면 동선</text>
+      <line x1="478" y1="107" x2="574" y2="80" stroke="#e45756" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arRed14b)" mask="url(#l14m1)"/>
+      <line x1="592" y1="81" x2="670" y2="142" stroke="#e45756" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arRed14b)" mask="url(#l14m2)"/>
+      <line x1="672" y1="158" x2="610" y2="216" stroke="#e45756" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arRed14b)" mask="url(#l14m3)"/>
+      <g class="l14-pt l14-d0"><circle cx="470" cy="110" r="7" fill="#3ba6a0"/><text x="470" y="92" text-anchor="middle" font-size="11.5" fill="#5c617a">기록 ① (이름 없음)</text></g>
+      <g class="l14-pt l14-d2"><circle cx="585" cy="75" r="7" fill="#3ba6a0"/><text x="585" y="57" text-anchor="middle" font-size="11.5" fill="#5c617a">기록 ② (이름 없음)</text></g>
+      <g class="l14-pt l14-d4"><circle cx="678" cy="150" r="7" fill="#3ba6a0"/><text x="700" y="133" text-anchor="middle" font-size="11.5" fill="#5c617a">기록 ③ (이름 없음)</text></g>
+      <g class="l14-pt l14-d6"><circle cx="600" cy="224" r="7" fill="#3ba6a0"/><text x="558" y="230" text-anchor="end" font-size="11.5" fill="#5c617a">기록 ④ (이름 없음)</text></g>
+      <text class="l14-fin l14-d7" x="612" y="262" text-anchor="middle" font-size="13" font-weight="800" fill="#e45756">한 사람의 동선이 드러남</text>
+    </svg>
+  </div>
+  <div class="l14-ctl"><button type="button" class="l14-btn l14-primary l14-replay" aria-label="동선 애니메이션 다시 보기"></button></div>
+  </div>
+  <p class="l14-cap">정보를 공개할 때는 개인을 알아볼 가능성, 정보의 내용, 다른 정보와의 결합 가능성, 공개가 미칠 영향을 함께 살핍니다.</p>
+    </div>
+  </details>
+  <figure class="interactive" data-fig="reidNarrow">
+    <div class="widget" data-w="reidNarrow">
+  <svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="영화명 열을 지운 표 216편을 점 216개로 나타낸 격자. 버튼으로 켠 특징 조합이 한 편뿐인 영화는 빨간 점, 두 편 이상인 영화는 회색 점">
+    <text x="360" y="34" text-anchor="middle" font-size="16" fill="#1c2230">영화명 열을 지운 표 216편</text>
+    <text class="sub" x="360" y="62" text-anchor="middle" font-size="14" fill="#6b7385">켠 특징 · 국가</text>
+    <text class="bins" x="360" y="84" text-anchor="middle" font-size="14" fill="#6b7385"></text>
+    <g class="dots">
+      <circle cx="68" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="94" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="120" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="146" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="172" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="198" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="224" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="250" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="276" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="302" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="328" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="354" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="380" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="406" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="432" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="458" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="484" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="510" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="536" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="562" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="588" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="614" cy="100" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="640" cy="100" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="666" cy="100" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="68" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="94" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="120" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="146" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="172" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="198" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="224" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="250" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="276" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="302" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="328" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="354" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="380" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="406" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="432" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="458" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="484" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="510" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="536" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="562" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="588" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="614" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="640" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="666" cy="126" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="68" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="94" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="120" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="146" cy="152" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="172" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="198" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="224" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="250" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="276" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="302" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="328" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="354" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="380" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="406" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="432" cy="152" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="458" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="484" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="510" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="536" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="562" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="588" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="614" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="640" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="666" cy="152" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="68" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="94" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="120" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="146" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="172" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="198" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="224" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="250" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="276" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="302" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="328" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="354" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="380" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="406" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="432" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="458" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="484" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="510" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="536" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="562" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="588" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="614" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="640" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="666" cy="178" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="68" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="94" cy="204" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="120" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="146" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="172" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="198" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="224" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="250" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="276" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="302" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="328" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="354" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="380" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="406" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="432" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="458" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="484" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="510" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="536" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="562" cy="204" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="588" cy="204" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="614" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="640" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="666" cy="204" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="68" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="94" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="120" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="146" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="172" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="198" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="224" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="250" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="276" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="302" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="328" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="354" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="380" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="406" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="432" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="458" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="484" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="510" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="536" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="562" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="588" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="614" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="640" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="666" cy="230" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="68" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="94" cy="256" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="120" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="146" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="172" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="198" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="224" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="250" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="276" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="302" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="328" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="354" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="380" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="406" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="432" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="458" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="484" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="510" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="536" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="562" cy="256" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="588" cy="256" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="614" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="640" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="666" cy="256" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="68" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="94" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="120" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="146" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="172" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="198" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="224" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="250" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="276" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="302" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="328" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="354" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="380" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="406" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="432" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="458" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="484" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="510" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="536" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="562" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="588" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="614" cy="282" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="640" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="666" cy="282" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="68" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="94" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="120" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="146" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="172" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="198" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="224" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="250" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="276" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="302" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="328" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="354" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="380" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="406" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="432" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="458" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="484" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="510" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="536" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="562" cy="308" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="588" cy="308" r="6.5" fill="#d64545" opacity="1" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="614" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="640" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+      <circle cx="666" cy="308" r="6.5" fill="#b9b3a5" opacity=".5" style="transition:fill .3s,opacity .3s"/>
+    </g>
+    <circle cx="68" cy="337" r="6.5" fill="#d64545"/>
+    <text x="82" y="342" text-anchor="start" font-size="14" fill="#1c2230">한 편으로 좁혀짐</text>
+    <circle cx="68" cy="361" r="6.5" fill="#b9b3a5" opacity=".5"/>
+    <text x="82" y="366" text-anchor="start" font-size="14" fill="#1c2230">같은 값이 두 편 이상</text>
+  </svg>
+  <div class="wctl">
+    <button class="wbtn on" type="button" data-k="0" aria-pressed="true">국가</button>
+    <button class="wbtn" type="button" data-k="1" aria-pressed="false">장르</button>
+    <button class="wbtn" type="button" data-k="2" aria-pressed="false">개봉월</button>
+    <button class="wbtn" type="button" data-k="3" aria-pressed="false">관객 규모</button>
+    <span class="wout">국가 → 13편(6.0%) 한 편으로 좁혀짐 · 가장 큰 묶음 84편</span>
+  </div>
+</div>
+    <figcaption><b>버튼을 누르기 전에 먼저 예상해 봅니다.</b> 국가·장르·개봉월 세 항목을 모두 선택하면, 216편 중 다른 영화와 구별할 수 있는 영화는 몇 편일까요? 예상한 편수를 적은 뒤 버튼을 하나씩 눌러 결과를 비교합니다. 선택한 항목의 조합이 한 편뿐인 영화는 빨간 점으로 표시됩니다. 사람에 관한 데이터에서 이처럼 여러 정보를 결합해 누구의 기록인지 다시 알아내는 일을 재식별이라고 합니다.</figcaption>
+  </figure>
+
+
+  <p>2018년에는 달리기 기록 앱이 이용자들의 활동 기록을 모아 세계 지도에 공개하면서 해외 군사기지의 내부 도로와 순찰 경로가 드러난 일이 있었습니다(<a href="https://www.abc.net.au/news/science/2018-01-29/strava-heat-map-shows-military-bases-and-supply-routes/9369490" target="_blank" rel="noopener">보도 보기</a>). 이름을 지우고 여러 사람의 기록을 합쳤더라도, 기록을 연결하면 예상하지 못한 정보가 드러날 수 있습니다.</p>
+
+  </section>
+  <section class="l14-scene">
+  <h3>장면 3 — 모델에 반영된 데이터 편향 살펴보기</h3>
+  <p>영화 관객 수 예측 모델에는 첫 관측일 스크린 수가 변수로 들어 있었습니다. 스크린을 많이 받은 영화의 관객 수가 크게 기록되면, 모델은 <b>스크린 수가 많은 영화의 관객 수를 높게 예측</b>하도록 학습합니다.</p>
+  <p>일부 영화에 스크린 배정이 치우쳤다고 가정해 봅시다. 그 기록으로 학습한 모델의 예측을 다음 스크린 배정의 근거로 다시 사용하면, 처음의 치우침이 반복될 수 있습니다. 도입에서 살펴본 채용 도구도 과거의 이력서로 다음 지원자를 평가하면서 편향을 되풀이한 사례입니다.</p>
+  <p>다만 이 데이터만으로 실제 스크린 배정이 불공정했는지 판단할 수는 없습니다. 또 관객 수를 예측하는 일과 영화의 예술적 가치나 완성도를 평가하는 일은 구분해야 합니다.</p>
+  <div class="l14-fig l14-loop">
+  <div class="l14-scroll">
+    <svg tabindex="0" viewBox="0 0 780 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="치우친 스크린 배정이 데이터와 모델을 거쳐 다시 배정의 근거가 되는 순환 구조">
+      <defs>
+        <marker id="arAcc14" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e8930c"/></marker>
+        <marker id="arRed14" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#e45756"/></marker>
+      </defs>
+      <!-- ① 스크린 배정 (상단) -->
+      <g class="l14-node" data-n="1">
+      <rect x="240" y="18" width="300" height="66" rx="12" fill="#fdf8ef" stroke="#f0e2bc" stroke-width="2"/>
+      <text x="390" y="45" text-anchor="middle" font-size="14.5" font-weight="800" fill="#2b2d3a">① 스크린 배정</text>
+      <text x="390" y="68" text-anchor="middle" font-size="12" fill="#5c617a">일부 영화에 기회가 치우쳤다고 가정</text>
+      </g>
+      <!-- ② 데이터 (오른쪽) -->
+      <g class="l14-node" data-n="2">
+      <rect x="528" y="188" width="238" height="88" rx="12" fill="#fdf8ef" stroke="#f0e2bc" stroke-width="2"/>
+      <text x="647" y="216" text-anchor="middle" font-size="14.5" font-weight="800" fill="#2b2d3a">② 데이터</text>
+      <text x="647" y="239" text-anchor="middle" font-size="12" fill="#5c617a">스크린을 많이 받은</text>
+      <text x="647" y="257" text-anchor="middle" font-size="12" fill="#5c617a">영화의 흥행 기록</text>
+      </g>
+      <!-- ③ 모델 (하단) -->
+      <g class="l14-node" data-n="3">
+      <rect x="230" y="372" width="320" height="86" rx="12" fill="#fdf8ef" stroke="#f0e2bc" stroke-width="2"/>
+      <text x="390" y="400" text-anchor="middle" font-size="14.5" font-weight="800" fill="#2b2d3a">③ 모델</text>
+      <text x="390" y="423" text-anchor="middle" font-size="12" fill="#5c617a">"스크린을 많이 받을 영화가</text>
+      <text x="390" y="441" text-anchor="middle" font-size="12" fill="#5c617a">성공한다"고 학습</text>
+      </g>
+      <!-- ④ 예측 (왼쪽) -->
+      <g class="l14-node" data-n="4">
+      <rect x="14" y="188" width="226" height="88" rx="12" fill="#fdf8ef" stroke="#f0e2bc" stroke-width="2"/>
+      <text x="127" y="221" text-anchor="middle" font-size="14.5" font-weight="800" fill="#2b2d3a">④ 예측</text>
+      <text x="127" y="247" text-anchor="middle" font-size="12" fill="#5c617a">다음 배정의 근거가 됨</text>
+      </g>
+      <!-- 중앙 -->
+      <g class="l14-core">
+      <text x="390" y="230" text-anchor="middle" font-size="14" font-weight="800" fill="#e8930c">치우침이</text>
+      <text x="390" y="252" text-anchor="middle" font-size="14" font-weight="800" fill="#e8930c">반복될 수 있다</text>
+      </g>
+      <!-- 화살표: ①→②→③→④는 주황, 고리를 닫는 ④→①만 빨강 -->
+      <path class="l14-arrow" data-n="1" pathLength="100" d="M505,90 C570,112 610,145 638,180" fill="none" stroke="#e8930c" stroke-width="2.5" marker-end="url(#arAcc14)"/>
+      <path class="l14-arrow" data-n="2" pathLength="100" d="M655,284 C640,322 600,352 552,378" fill="none" stroke="#e8930c" stroke-width="2.5" marker-end="url(#arAcc14)"/>
+      <path class="l14-arrow" data-n="3" pathLength="100" d="M225,412 C165,392 135,345 122,286" fill="none" stroke="#e8930c" stroke-width="2.5" marker-end="url(#arAcc14)"/>
+      <path class="l14-arrow" data-n="4" pathLength="100" d="M118,180 C132,115 175,72 232,55" fill="none" stroke="#e45756" stroke-width="3" marker-end="url(#arRed14)"/>
+      <g class="l14-warn">
+      <text x="68" y="100" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e45756">작은 영화는</text>
+      <text x="68" y="118" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e45756">불리할 수 있다</text>
+      </g>
+    </svg>
+  </div>
+  <div class="l14-ctl"><button type="button" class="l14-btn l14-primary l14-play" aria-label="되먹임 고리 애니메이션 재생"></button><button type="button" class="l14-btn l14-step" aria-label="되먹임 고리 다음 단계"></button></div>
+  </div>
+  <p class="l14-cap">편향이 반복될 수 있는 과정을 보여 주는 가상 사례입니다. 현재 영화 데이터만으로 실제 스크린 배정의 원인이나 공정성을 판단할 수는 없습니다.</p>
+  <details class="glossary"><summary>🔬 그래프로 살펴보기 — 영화별 스크린 수의 분포</summary><div class="gin">
+  <figure class="interactive" data-fig="screenSkew">
+    <div class="widget" data-w="screenSkew">
+  <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="영화 216편의 첫 관측일 스크린 수를 내림차순으로 세운 막대그래프: 상위 비율 슬라이더를 옮기면 파란 막대 구간과 그 구간이 차지하는 스크린 수 비율이 함께 바뀜">
+    <text x="56" y="14" text-anchor="start" font-size="14" fill="#6b7385">스크린 수</text>
+    <line x1="56" y1="249.38" x2="696" y2="249.38" stroke="#e3ddcf" stroke-width="1"/>
+    <line x1="56" y1="194.77" x2="696" y2="194.77" stroke="#e3ddcf" stroke-width="1"/>
+    <line x1="56" y1="140.15" x2="696" y2="140.15" stroke="#e3ddcf" stroke-width="1"/>
+    <line x1="56" y1="85.54" x2="696" y2="85.54" stroke="#e3ddcf" stroke-width="1"/>
+    <line x1="56" y1="30.92" x2="696" y2="30.92" stroke="#e3ddcf" stroke-width="1"/>
+    <line x1="56" y1="304" x2="696" y2="304" stroke="#b9b3a5" stroke-width="1"/>
+    <text x="50" y="309" text-anchor="end" font-size="14" fill="#6b7385">0</text>
+    <text x="50" y="254.38" text-anchor="end" font-size="14" fill="#6b7385">500</text>
+    <text x="50" y="199.77" text-anchor="end" font-size="14" fill="#6b7385">1,000</text>
+    <text x="50" y="145.15" text-anchor="end" font-size="14" fill="#6b7385">1,500</text>
+    <text x="50" y="90.54" text-anchor="end" font-size="14" fill="#6b7385">2,000</text>
+    <text x="50" y="35.92" text-anchor="end" font-size="14" fill="#6b7385">2,500</text>
+    <g class="bars">
+      <rect x="56" y="22" width="2.36" height="282" fill="#2b7fd6"/>
+      <rect x="59" y="76.4" width="2.36" height="227.6" fill="#2b7fd6"/>
+      <rect x="61.9" y="118.4" width="2.36" height="185.6" fill="#2b7fd6"/>
+      <rect x="64.9" y="153.9" width="2.36" height="150.1" fill="#2b7fd6"/>
+      <rect x="67.9" y="158.6" width="2.36" height="145.4" fill="#2b7fd6"/>
+      <rect x="70.8" y="166.3" width="2.36" height="137.7" fill="#2b7fd6"/>
+      <rect x="73.8" y="176.6" width="2.36" height="127.4" fill="#2b7fd6"/>
+      <rect x="76.7" y="186.9" width="2.36" height="117.1" fill="#2b7fd6"/>
+      <rect x="79.7" y="200" width="2.36" height="104" fill="#2b7fd6"/>
+      <rect x="82.7" y="201.3" width="2.36" height="102.7" fill="#2b7fd6"/>
+      <rect x="85.6" y="207.5" width="2.36" height="96.5" fill="#2b7fd6"/>
+      <rect x="88.6" y="211" width="2.36" height="93" fill="#2b7fd6"/>
+      <rect x="91.6" y="211.9" width="2.36" height="92.1" fill="#2b7fd6"/>
+      <rect x="94.5" y="212" width="2.36" height="92" fill="#2b7fd6"/>
+      <rect x="97.5" y="213.4" width="2.36" height="90.6" fill="#2b7fd6"/>
+      <rect x="100.4" y="215.6" width="2.36" height="88.4" fill="#2b7fd6"/>
+      <rect x="103.4" y="218.9" width="2.36" height="85.1" fill="#2b7fd6"/>
+      <rect x="106.4" y="222.2" width="2.36" height="81.8" fill="#2b7fd6"/>
+      <rect x="109.3" y="223.4" width="2.36" height="80.6" fill="#2b7fd6"/>
+      <rect x="112.3" y="228.2" width="2.36" height="75.8" fill="#2b7fd6"/>
+      <rect x="115.3" y="228.8" width="2.36" height="75.2" fill="#2b7fd6"/>
+      <rect x="118.2" y="232.6" width="2.36" height="71.4" fill="#2b7fd6"/>
+      <rect x="121.2" y="233.2" width="2.36" height="70.8" fill="#b9b3a5"/>
+      <rect x="124.1" y="238.4" width="2.36" height="65.6" fill="#b9b3a5"/>
+      <rect x="127.1" y="238.8" width="2.36" height="65.2" fill="#b9b3a5"/>
+      <rect x="130.1" y="241.6" width="2.36" height="62.4" fill="#b9b3a5"/>
+      <rect x="133" y="242" width="2.36" height="62" fill="#b9b3a5"/>
+      <rect x="136" y="242.8" width="2.36" height="61.2" fill="#b9b3a5"/>
+      <rect x="139" y="243.2" width="2.36" height="60.8" fill="#b9b3a5"/>
+      <rect x="141.9" y="245.2" width="2.36" height="58.8" fill="#b9b3a5"/>
+      <rect x="144.9" y="245.5" width="2.36" height="58.5" fill="#b9b3a5"/>
+      <rect x="147.9" y="245.6" width="2.36" height="58.4" fill="#b9b3a5"/>
+      <rect x="150.8" y="245.8" width="2.36" height="58.2" fill="#b9b3a5"/>
+      <rect x="153.8" y="246.8" width="2.36" height="57.2" fill="#b9b3a5"/>
+      <rect x="156.7" y="247.4" width="2.36" height="56.6" fill="#b9b3a5"/>
+      <rect x="159.7" y="248.8" width="2.36" height="55.2" fill="#b9b3a5"/>
+      <rect x="162.7" y="249.2" width="2.36" height="54.8" fill="#b9b3a5"/>
+      <rect x="165.6" y="249.6" width="2.36" height="54.4" fill="#b9b3a5"/>
+      <rect x="168.6" y="250.8" width="2.36" height="53.2" fill="#b9b3a5"/>
+      <rect x="171.6" y="251" width="2.36" height="53" fill="#b9b3a5"/>
+      <rect x="174.5" y="251.1" width="2.36" height="52.9" fill="#b9b3a5"/>
+      <rect x="177.5" y="253" width="2.36" height="51" fill="#b9b3a5"/>
+      <rect x="180.4" y="255.9" width="2.36" height="48.1" fill="#b9b3a5"/>
+      <rect x="183.4" y="256" width="2.36" height="48" fill="#b9b3a5"/>
+      <rect x="186.4" y="257.2" width="2.36" height="46.8" fill="#b9b3a5"/>
+      <rect x="189.3" y="258.9" width="2.36" height="45.1" fill="#b9b3a5"/>
+      <rect x="192.3" y="259.3" width="2.36" height="44.7" fill="#b9b3a5"/>
+      <rect x="195.3" y="259.7" width="2.36" height="44.3" fill="#b9b3a5"/>
+      <rect x="198.2" y="260.4" width="2.36" height="43.6" fill="#b9b3a5"/>
+      <rect x="201.2" y="261.9" width="2.36" height="42.1" fill="#b9b3a5"/>
+      <rect x="204.1" y="262.4" width="2.36" height="41.6" fill="#b9b3a5"/>
+      <rect x="207.1" y="262.6" width="2.36" height="41.4" fill="#b9b3a5"/>
+      <rect x="210.1" y="262.7" width="2.36" height="41.3" fill="#b9b3a5"/>
+      <rect x="213" y="263.8" width="2.36" height="40.2" fill="#b9b3a5"/>
+      <rect x="216" y="263.8" width="2.36" height="40.2" fill="#b9b3a5"/>
+      <rect x="219" y="264.1" width="2.36" height="39.9" fill="#b9b3a5"/>
+      <rect x="221.9" y="264.9" width="2.36" height="39.1" fill="#b9b3a5"/>
+      <rect x="224.9" y="265.2" width="2.36" height="38.8" fill="#b9b3a5"/>
+      <rect x="227.9" y="265.4" width="2.36" height="38.6" fill="#b9b3a5"/>
+      <rect x="230.8" y="265.9" width="2.36" height="38.1" fill="#b9b3a5"/>
+      <rect x="233.8" y="267" width="2.36" height="37" fill="#b9b3a5"/>
+      <rect x="236.7" y="269.7" width="2.36" height="34.3" fill="#b9b3a5"/>
+      <rect x="239.7" y="270.2" width="2.36" height="33.8" fill="#b9b3a5"/>
+      <rect x="242.7" y="270.6" width="2.36" height="33.4" fill="#b9b3a5"/>
+      <rect x="245.6" y="270.7" width="2.36" height="33.3" fill="#b9b3a5"/>
+      <rect x="248.6" y="271.8" width="2.36" height="32.2" fill="#b9b3a5"/>
+      <rect x="251.6" y="274.3" width="2.36" height="29.7" fill="#b9b3a5"/>
+      <rect x="254.5" y="274.6" width="2.36" height="29.4" fill="#b9b3a5"/>
+      <rect x="257.5" y="274.8" width="2.36" height="29.2" fill="#b9b3a5"/>
+      <rect x="260.4" y="275.4" width="2.36" height="28.6" fill="#b9b3a5"/>
+      <rect x="263.4" y="275.6" width="2.36" height="28.4" fill="#b9b3a5"/>
+      <rect x="266.4" y="276.4" width="2.36" height="27.6" fill="#b9b3a5"/>
+      <rect x="269.3" y="276.6" width="2.36" height="27.4" fill="#b9b3a5"/>
+      <rect x="272.3" y="277" width="2.36" height="27" fill="#b9b3a5"/>
+      <rect x="275.3" y="277.2" width="2.36" height="26.8" fill="#b9b3a5"/>
+      <rect x="278.2" y="277.3" width="2.36" height="26.7" fill="#b9b3a5"/>
+      <rect x="281.2" y="277.8" width="2.36" height="26.2" fill="#b9b3a5"/>
+      <rect x="284.1" y="279.4" width="2.36" height="24.6" fill="#b9b3a5"/>
+      <rect x="287.1" y="279.8" width="2.36" height="24.2" fill="#b9b3a5"/>
+      <rect x="290.1" y="279.8" width="2.36" height="24.2" fill="#b9b3a5"/>
+      <rect x="293" y="279.9" width="2.36" height="24.1" fill="#b9b3a5"/>
+      <rect x="296" y="280" width="2.36" height="24" fill="#b9b3a5"/>
+      <rect x="299" y="280.6" width="2.36" height="23.4" fill="#b9b3a5"/>
+      <rect x="301.9" y="281.3" width="2.36" height="22.7" fill="#b9b3a5"/>
+      <rect x="304.9" y="282.4" width="2.36" height="21.6" fill="#b9b3a5"/>
+      <rect x="307.9" y="282.6" width="2.36" height="21.4" fill="#b9b3a5"/>
+      <rect x="310.8" y="283.1" width="2.36" height="20.9" fill="#b9b3a5"/>
+      <rect x="313.8" y="283.5" width="2.36" height="20.5" fill="#b9b3a5"/>
+      <rect x="316.7" y="284.1" width="2.36" height="19.9" fill="#b9b3a5"/>
+      <rect x="319.7" y="284.3" width="2.36" height="19.7" fill="#b9b3a5"/>
+      <rect x="322.7" y="284.3" width="2.36" height="19.7" fill="#b9b3a5"/>
+      <rect x="325.6" y="284.8" width="2.36" height="19.2" fill="#b9b3a5"/>
+      <rect x="328.6" y="284.9" width="2.36" height="19.1" fill="#b9b3a5"/>
+      <rect x="331.6" y="285" width="2.36" height="19" fill="#b9b3a5"/>
+      <rect x="334.5" y="285" width="2.36" height="19" fill="#b9b3a5"/>
+      <rect x="337.5" y="285.1" width="2.36" height="18.9" fill="#b9b3a5"/>
+      <rect x="340.4" y="285.4" width="2.36" height="18.6" fill="#b9b3a5"/>
+      <rect x="343.4" y="285.8" width="2.36" height="18.2" fill="#b9b3a5"/>
+      <rect x="346.4" y="286" width="2.36" height="18" fill="#b9b3a5"/>
+      <rect x="349.3" y="286.1" width="2.36" height="17.9" fill="#b9b3a5"/>
+      <rect x="352.3" y="286.3" width="2.36" height="17.7" fill="#b9b3a5"/>
+      <rect x="355.3" y="286.7" width="2.36" height="17.3" fill="#b9b3a5"/>
+      <rect x="358.2" y="286.9" width="2.36" height="17.1" fill="#b9b3a5"/>
+      <rect x="361.2" y="287.1" width="2.36" height="16.9" fill="#b9b3a5"/>
+      <rect x="364.1" y="287.1" width="2.36" height="16.9" fill="#b9b3a5"/>
+      <rect x="367.1" y="287.1" width="2.36" height="16.9" fill="#b9b3a5"/>
+      <rect x="370.1" y="287.3" width="2.36" height="16.7" fill="#b9b3a5"/>
+      <rect x="373" y="287.6" width="2.36" height="16.4" fill="#b9b3a5"/>
+      <rect x="376" y="288.2" width="2.36" height="15.8" fill="#b9b3a5"/>
+      <rect x="379" y="288.2" width="2.36" height="15.8" fill="#b9b3a5"/>
+      <rect x="381.9" y="288.4" width="2.36" height="15.6" fill="#b9b3a5"/>
+      <rect x="384.9" y="288.5" width="2.36" height="15.5" fill="#b9b3a5"/>
+      <rect x="387.9" y="288.6" width="2.36" height="15.4" fill="#b9b3a5"/>
+      <rect x="390.8" y="288.6" width="2.36" height="15.4" fill="#b9b3a5"/>
+      <rect x="393.8" y="288.6" width="2.36" height="15.4" fill="#b9b3a5"/>
+      <rect x="396.7" y="289.1" width="2.36" height="14.9" fill="#b9b3a5"/>
+      <rect x="399.7" y="289.4" width="2.36" height="14.6" fill="#b9b3a5"/>
+      <rect x="402.7" y="289.5" width="2.36" height="14.5" fill="#b9b3a5"/>
+      <rect x="405.6" y="289.8" width="2.36" height="14.2" fill="#b9b3a5"/>
+      <rect x="408.6" y="289.8" width="2.36" height="14.2" fill="#b9b3a5"/>
+      <rect x="411.6" y="289.9" width="2.36" height="14.1" fill="#b9b3a5"/>
+      <rect x="414.5" y="290.1" width="2.36" height="13.9" fill="#b9b3a5"/>
+      <rect x="417.5" y="290.6" width="2.36" height="13.4" fill="#b9b3a5"/>
+      <rect x="420.4" y="291" width="2.36" height="13" fill="#b9b3a5"/>
+      <rect x="423.4" y="291.1" width="2.36" height="12.9" fill="#b9b3a5"/>
+      <rect x="426.4" y="291.2" width="2.36" height="12.8" fill="#b9b3a5"/>
+      <rect x="429.3" y="291.3" width="2.36" height="12.7" fill="#b9b3a5"/>
+      <rect x="432.3" y="291.4" width="2.36" height="12.6" fill="#b9b3a5"/>
+      <rect x="435.3" y="291.4" width="2.36" height="12.6" fill="#b9b3a5"/>
+      <rect x="438.2" y="292.7" width="2.36" height="11.3" fill="#b9b3a5"/>
+      <rect x="441.2" y="292.9" width="2.36" height="11.1" fill="#b9b3a5"/>
+      <rect x="444.1" y="292.9" width="2.36" height="11.1" fill="#b9b3a5"/>
+      <rect x="447.1" y="293.1" width="2.36" height="10.9" fill="#b9b3a5"/>
+      <rect x="450.1" y="293.6" width="2.36" height="10.4" fill="#b9b3a5"/>
+      <rect x="453" y="294.2" width="2.36" height="9.8" fill="#b9b3a5"/>
+      <rect x="456" y="294.4" width="2.36" height="9.6" fill="#b9b3a5"/>
+      <rect x="459" y="294.5" width="2.36" height="9.5" fill="#b9b3a5"/>
+      <rect x="461.9" y="294.6" width="2.36" height="9.4" fill="#b9b3a5"/>
+      <rect x="464.9" y="294.8" width="2.36" height="9.2" fill="#b9b3a5"/>
+      <rect x="467.9" y="294.8" width="2.36" height="9.2" fill="#b9b3a5"/>
+      <rect x="470.8" y="294.9" width="2.36" height="9.1" fill="#b9b3a5"/>
+      <rect x="473.8" y="295.3" width="2.36" height="8.7" fill="#b9b3a5"/>
+      <rect x="476.7" y="295.5" width="2.36" height="8.5" fill="#b9b3a5"/>
+      <rect x="479.7" y="295.5" width="2.36" height="8.5" fill="#b9b3a5"/>
+      <rect x="482.7" y="295.7" width="2.36" height="8.3" fill="#b9b3a5"/>
+      <rect x="485.6" y="295.9" width="2.36" height="8.1" fill="#b9b3a5"/>
+      <rect x="488.6" y="297.1" width="2.36" height="6.9" fill="#b9b3a5"/>
+      <rect x="491.6" y="297.2" width="2.36" height="6.8" fill="#b9b3a5"/>
+      <rect x="494.5" y="297.2" width="2.36" height="6.8" fill="#b9b3a5"/>
+      <rect x="497.5" y="297.3" width="2.36" height="6.7" fill="#b9b3a5"/>
+      <rect x="500.4" y="297.7" width="2.36" height="6.3" fill="#b9b3a5"/>
+      <rect x="503.4" y="298" width="2.36" height="6" fill="#b9b3a5"/>
+      <rect x="506.4" y="298.1" width="2.36" height="5.9" fill="#b9b3a5"/>
+      <rect x="509.3" y="298.5" width="2.36" height="5.5" fill="#b9b3a5"/>
+      <rect x="512.3" y="298.9" width="2.36" height="5.1" fill="#b9b3a5"/>
+      <rect x="515.3" y="299" width="2.36" height="5" fill="#b9b3a5"/>
+      <rect x="518.2" y="299.1" width="2.36" height="4.9" fill="#b9b3a5"/>
+      <rect x="521.2" y="299.3" width="2.36" height="4.7" fill="#b9b3a5"/>
+      <rect x="524.1" y="299.6" width="2.36" height="4.4" fill="#b9b3a5"/>
+      <rect x="527.1" y="299.7" width="2.36" height="4.3" fill="#b9b3a5"/>
+      <rect x="530.1" y="299.8" width="2.36" height="4.2" fill="#b9b3a5"/>
+      <rect x="533" y="300.2" width="2.36" height="3.8" fill="#b9b3a5"/>
+      <rect x="536" y="300.3" width="2.36" height="3.7" fill="#b9b3a5"/>
+      <rect x="539" y="300.3" width="2.36" height="3.7" fill="#b9b3a5"/>
+      <rect x="541.9" y="300.5" width="2.36" height="3.5" fill="#b9b3a5"/>
+      <rect x="544.9" y="300.7" width="2.36" height="3.3" fill="#b9b3a5"/>
+      <rect x="547.9" y="300.7" width="2.36" height="3.3" fill="#b9b3a5"/>
+      <rect x="550.8" y="300.8" width="2.36" height="3.2" fill="#b9b3a5"/>
+      <rect x="553.8" y="301.1" width="2.36" height="2.9" fill="#b9b3a5"/>
+      <rect x="556.7" y="301.2" width="2.36" height="2.8" fill="#b9b3a5"/>
+      <rect x="559.7" y="301.2" width="2.36" height="2.8" fill="#b9b3a5"/>
+      <rect x="562.7" y="301.5" width="2.36" height="2.5" fill="#b9b3a5"/>
+      <rect x="565.6" y="301.7" width="2.36" height="2.3" fill="#b9b3a5"/>
+      <rect x="568.6" y="301.8" width="2.36" height="2.2" fill="#b9b3a5"/>
+      <rect x="571.6" y="301.9" width="2.36" height="2.1" fill="#b9b3a5"/>
+      <rect x="574.5" y="301.9" width="2.36" height="2.1" fill="#b9b3a5"/>
+      <rect x="577.5" y="301.9" width="2.36" height="2.1" fill="#b9b3a5"/>
+      <rect x="580.4" y="302.1" width="2.36" height="1.9" fill="#b9b3a5"/>
+      <rect x="583.4" y="302.1" width="2.36" height="1.9" fill="#b9b3a5"/>
+      <rect x="586.4" y="302.3" width="2.36" height="1.7" fill="#b9b3a5"/>
+      <rect x="589.3" y="302.3" width="2.36" height="1.7" fill="#b9b3a5"/>
+      <rect x="592.3" y="302.3" width="2.36" height="1.7" fill="#b9b3a5"/>
+      <rect x="595.3" y="302.6" width="2.36" height="1.4" fill="#b9b3a5"/>
+      <rect x="598.2" y="302.6" width="2.36" height="1.4" fill="#b9b3a5"/>
+      <rect x="601.2" y="302.6" width="2.36" height="1.4" fill="#b9b3a5"/>
+      <rect x="604.1" y="302.6" width="2.36" height="1.4" fill="#b9b3a5"/>
+      <rect x="607.1" y="302.7" width="2.36" height="1.3" fill="#b9b3a5"/>
+      <rect x="610.1" y="302.7" width="2.36" height="1.3" fill="#b9b3a5"/>
+      <rect x="613" y="302.8" width="2.36" height="1.2" fill="#b9b3a5"/>
+      <rect x="616" y="302.9" width="2.36" height="1.1" fill="#b9b3a5"/>
+      <rect x="619" y="302.9" width="2.36" height="1.1" fill="#b9b3a5"/>
+      <rect x="621.9" y="302.9" width="2.36" height="1.1" fill="#b9b3a5"/>
+      <rect x="624.9" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="627.9" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="630.8" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="633.8" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="636.7" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="639.7" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="642.7" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="645.6" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="648.6" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="651.6" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="654.5" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="657.5" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="660.4" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="663.4" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="666.4" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="669.3" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="672.3" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="675.3" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="678.2" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="681.2" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="684.1" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="687.1" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="690.1" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+      <rect x="693" y="303" width="2.36" height="1" fill="#b9b3a5"/>
+    </g>
+    <line class="cut" x1="120.89" y1="20" x2="120.89" y2="304" stroke="#b07a00" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <text class="cutlab" x="128" y="16" text-anchor="start" font-size="14" fill="#b07a00">상위 10%</text>
+    <text x="70" y="40" text-anchor="start" font-size="14" fill="#6b7385">216편 · 첫 관측일 스크린 수 합계 57,566</text>
+    <text x="70" y="60" text-anchor="start" font-size="14" fill="#6b7385">최댓값 2,582 · 중앙값 147.5 · 최솟값 1</text>
+    <text x="57.18" y="320" text-anchor="middle" font-size="14" fill="#6b7385">1</text>
+    <text x="202.37" y="320" text-anchor="middle" font-size="14" fill="#6b7385">50</text>
+    <text x="350.51" y="320" text-anchor="middle" font-size="14" fill="#6b7385">100</text>
+    <text x="498.66" y="320" text-anchor="middle" font-size="14" fill="#6b7385">150</text>
+    <text x="696" y="320" text-anchor="end" font-size="14" fill="#6b7385">216</text>
+    <text x="650" y="320" text-anchor="end" font-size="14" fill="#6b7385">스크린 수 순위</text>
+  </svg>
+  <div class="wctl">
+    <label>상위 비율 <input class="pin" type="range" min="5" max="100" step="5" value="10"></label>
+    <span class="wout">상위 10% · 22편 → 전체 스크린 수의 41.4%</span>
+  </div>
+</div>
+    <figcaption>슬라이더로 상위 비율을 바꾸면서, 선택한 영화들의 스크린 수 합계가 전체 합계에서 차지하는 비율을 확인합니다. 이 분포만으로 스크린 배정의 원인이나 공정성을 판단할 수는 없습니다.</figcaption>
+  </figure>
+  </div></details>
+
+
+  <details class="glossary"><summary>더 알아보기 — 얼굴 성별 분류의 집단별 정확도 비교(2018)</summary><div class="gin">
+  <h3>같은 분류기라도 집단에 따라 정확도가 다를까?</h3>
+  <p>2018년 매사추세츠공과대학교 미디어랩의 조이 부올람위니와 팀닛 게브루는 마이크로소프트·페이스++·아이비엠의 얼굴 성별 분류 서비스를 같은 사진 1,270장으로 평가했습니다. 아래 표에서 세 회사의 집단별 정확도와 최대 격차를 비교해 봅니다.</p>
+  <div class="l14-scroll">
+  <table class="daymap">
+    <thead><tr><th>분류기</th><th>어두운 피부<br>남성</th><th>어두운 피부<br>여성</th><th>밝은 피부<br>남성</th><th>밝은 피부<br>여성</th><th>최대 격차</th></tr></thead>
+    <tbody>
+      <tr><td><b>마이크로소프트</b></td><td>94.0%</td><td>79.2%</td><td>100%</td><td>98.3%</td><td>20.8%p</td></tr>
+      <tr><td><b>페이스++</b></td><td>99.3%</td><td>65.5%</td><td>99.2%</td><td>94.0%</td><td>33.8%p</td></tr>
+      <tr><td><b>아이비엠</b></td><td>88.0%</td><td>65.3%</td><td>99.7%</td><td>92.9%</td><td>34.4%p</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="l14-cap">같은 사진 1,270장을 대상으로 MIT 미디어랩의 조이 부올람위니와 팀닛 게브루가 평가를 진행했습니다(<a href="https://news.mit.edu/2018/study-finds-gender-skin-type-bias-artificial-intelligence-systems-0212" target="_blank" rel="noopener">연구 소개 보기</a>).</p>
+  <p>분류모델은 다루지 않았지 이 연구는 전체 정확도 하나로 모델을 평가하는 대신, 집단별로 정확도를 나누어 비교했습니다. 집단 간 최대 격차는 회사별로 20.8%p, 33.8%p, 34.4%p였습니다. 이는 교과서 38쪽의 데이터 편향성과 연결됩니다. 치우친 데이터로 만든 모델은 특정 대상에게 불리하게 작동할 수 있습니다.</p>
+  <figure class="case" style="margin:16px 0 4px"><img src="img/lesson14_case2.png" alt="위쪽에 평가 대상 네 집단을 나타내는 흐릿한 합성 얼굴 네 장, 아래쪽에 마이크로소프트·페이스++·아이비엠의 집단별 정확도와 최대 격차를 막대와 함께 정리한 표." loading="lazy" width="1172" height="747" style="width:100%;height:auto;display:block;border:1px solid var(--border);border-radius:var(--radius);background:#fff"><figcaption>같은 모델에서도 평가 집단에 따라 정확도가 최대 34.4%p 차이 났습니다. 이미지 자료: 젠더 셰이드 프로젝트(gendershades.org, MIT 미디어랩 2018) 공개 데이터. 수치 출처: Buolamwini &amp; Gebru(2018), PMLR 81.</figcaption></figure>
+  <p>전체 정확도만 보면 집단별 차이를 놓칠 수 있습니다. 어떤 집단으로 나누어 살펴볼지는 사람이 정하며, 그 선택에 따라 모델에 대한 평가도 달라집니다.</p>
+  </div></details>
+
+  </section>
+  <section class="l14-scene">
+  <h3>장면 4 — AI가 작성한 코드의 결과 검증하기</h3>
+  <p>AI가 작성한 코드라도 그 결과를 앱으로 공개하는 사람은 검증에 참여해야 합니다. 앞에서 했 손계산과 예시 데이터 검산이 그 방법입니다. 결과에 문제가 있으면 데이터를 다시 확인하고 오류를 수정한 뒤, 이용자에게 알립니다. 어디까지 확인했는지, 어떤 한계가 남아 있는지도 함께 밝힙니다.</p>
+  </section>
+  </div>
+
+  <h2>3. 앱 공개 전 점검하기</h2>
+  <p>데이터 윤리는 앱을 공개하기 직전에 한 번 확인하고 끝낼 일이 아닙니다. 교과서 38쪽에서도 데이터 수집 단계부터 편향을 검토해야 한다고 설명합니다. 앞의 네 장면에서 살펴본 기준을 다음 세 항목으로 정리해 봅니다. 팀 프로젝트의 데이터를 고를 때부터 앱을 공개할 때까지 이 목록으로 점검합니다.</p>
+  <div class="callout check l14-self">
+    <div class="h">✔️ 앱 공개 전 확인할 세 가지</div>
+    <div class="l14-prog" role="progressbar" aria-label="앱 공개 전 점검 진행" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0"><div class="l14-bar"><i></i></div><span class="l14-cnt">0/3</span><span class="l14-done" hidden>점검 완료</span></div>
+    <ul class="l14-items">
+      <li><b>키</b> — 비공개용 키를 비밀 금고에 보관했는가? 공개 가능한 키도 접근 권한 설정을 확인했는가?</li>
+      <li><b>출처</b> — 데이터의 출처·수집 시점·이용 조건을 확인하고 화면에 표기했는가?</li>
+      <li><b>사람</b> — 다른 정보와 결합해 개인을 알아볼 수 있는지 확인했는가? 분석·공개가 특정 대상에게 불리하게 작용할 가능성을 점검했는가?</li>
+    </ul>
+  </div>
+  <p>확인하지 못한 항목은 ‘확인 필요’로 남겨 두고, 추가로 알아볼 내용을 한 줄로 적습니다. 출처를 표기했더라도 이용 조건을 모두 충족했는지는 따로 확인해야 합니다.</p>
+  <figure class="interactive" data-fig="openCheck">
+    <div class="widget" data-w="openCheck">
+  <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="데이터 점검 항목 판정 그림">
+    <text x="135" y="26" text-anchor="middle" font-size="14" fill="#6b7385">데이터</text>
+    <g class="ocCard" data-s="0">
+      <rect x="20" y="40" width="230" height="52" rx="10" fill="#fff" stroke="#2b7fd6" stroke-width="2"/>
+      <text x="135" y="71" text-anchor="middle" font-size="15" fill="#1c2230">급식 식단</text>
+    </g>
+    <g class="ocCard" data-s="1">
+      <rect x="20" y="100" width="230" height="52" rx="10" fill="#fff" stroke="#e3ddcf" stroke-width="1.5"/>
+      <text x="135" y="131" text-anchor="middle" font-size="13" fill="#1c2230">우리 반 설문 응답(자유 서술 포함)</text>
+    </g>
+    <g class="ocCard" data-s="2">
+      <rect x="20" y="160" width="230" height="52" rx="10" fill="#fff" stroke="#e3ddcf" stroke-width="1.5"/>
+      <text x="135" y="191" text-anchor="middle" font-size="13" fill="#1c2230">우리 반 설문 응답(앱으로 수집)</text>
+    </g>
+    <g class="ocCard" data-s="3">
+      <rect x="20" y="220" width="230" height="52" rx="10" fill="#fff" stroke="#e3ddcf" stroke-width="1.5"/>
+      <text x="135" y="251" text-anchor="middle" font-size="15" fill="#1c2230">스마트폰 위치 기록</text>
+    </g>
+    <text x="485" y="26" text-anchor="middle" font-size="14" fill="#6b7385">점검 3항목</text>
+    <g class="ocRow" data-r="0" role="button" tabindex="0" aria-label="키 항목 열기" style="cursor:pointer">
+      <rect class="rowBox" x="270" y="46" width="430" height="68" rx="10" fill="#fff" stroke="#e3ddcf" stroke-width="1.5"/>
+      <text x="292" y="73" font-size="16" font-weight="700" fill="#1c2230">키</text>
+      <text class="rowLine" x="292" y="98" font-size="14" fill="#6b7385">?</text>
+      <g class="rowBadge" opacity="0">
+        <rect x="600" y="60" width="90" height="26" rx="13" fill="#b07a00"/>
+        <text x="645" y="78" text-anchor="middle" font-size="13" fill="#fff">확인 필요</text>
+      </g>
+    </g>
+    <g class="ocRow" data-r="1" role="button" tabindex="0" aria-label="출처 항목 열기" style="cursor:pointer">
+      <rect class="rowBox" x="270" y="128" width="430" height="68" rx="10" fill="#fff" stroke="#e3ddcf" stroke-width="1.5"/>
+      <text x="292" y="155" font-size="16" font-weight="700" fill="#1c2230">출처</text>
+      <text class="rowLine" x="292" y="180" font-size="14" fill="#6b7385">?</text>
+      <g class="rowBadge" opacity="0">
+        <rect x="600" y="142" width="90" height="26" rx="13" fill="#b07a00"/>
+        <text x="645" y="160" text-anchor="middle" font-size="13" fill="#fff">확인 필요</text>
+      </g>
+    </g>
+    <g class="ocRow" data-r="2" role="button" tabindex="0" aria-label="사람 항목 열기" style="cursor:pointer">
+      <rect class="rowBox" x="270" y="210" width="430" height="68" rx="10" fill="#fff" stroke="#e3ddcf" stroke-width="1.5"/>
+      <text x="292" y="237" font-size="16" font-weight="700" fill="#1c2230">사람</text>
+      <text class="rowLine" x="292" y="262" font-size="14" fill="#6b7385">?</text>
+      <g class="rowBadge" opacity="0">
+        <rect x="600" y="224" width="90" height="26" rx="13" fill="#b07a00"/>
+        <text x="645" y="242" text-anchor="middle" font-size="13" fill="#fff">확인 필요</text>
+      </g>
+    </g>
+  </svg>
+  <div class="wctl">
+    <button class="wbtn on" type="button" data-s="0">급식 식단</button>
+    <button class="wbtn" type="button" data-s="1">우리 반 설문 응답(자유 서술 포함)</button>
+    <button class="wbtn" type="button" data-s="2">우리 반 설문 응답(앱으로 수집)</button>
+    <button class="wbtn" type="button" data-s="3">스마트폰 위치 기록</button>
+    <span class="wout">열어 본 항목 0/3</span>
+  </div>
+</div>
+    <figcaption><b>항목을 눌러 보기 전에 먼저 판단해 봅니다.</b> 데이터를 하나 고른 뒤, 키·출처·사람을 각각 ‘위험 낮음·확인 필요·조심’ 중 무엇으로 판단했는지 생각합니다. 그다음 각 항목을 눌러 자신의 판단과 비교합니다. 결과가 다른 항목은 왜 다르게 판단했는지 한 줄로 적습니다. 화면의 판정만으로 공개 여부를 결정하지 말고, 실제 데이터의 제공 조건도 확인합니다.</figcaption>
+  </figure>
+
+  <div class="callout ask">
+    <div class="h">⚖️ 어느 쪽을 먼저 고칠까</div>
+    <p>우리 반 설문 결과로 만든 앱을 내일 공개하려고 합니다. 다음 두 문제를 발견했는데, 공개 전까지 한 가지만 고칠 수 있습니다.<br>① 몇몇 학생이 자유 서술 칸에 적은 자기 별명이 화면에 그대로 표시됩니다.<br>② 화면 어디에도 데이터의 출처와 수집 시점을 표기하지 않았습니다.</p>
+    <ul>
+      <li>①과 ② 중 먼저 고칠 항목을 고르고 이유를 적습니다. 다른 항목을 고치지 않은 채 공개하면 어떤 일이 생길지도 함께 적습니다.<textarea class="answer-in" rows="1" placeholder="여기에 답을 적습니다" aria-label="답 1"></textarea></li>
+    </ul>
+  </div>
+
+
+  <h2>4. 모둠 토의 — 데이터 소유권 판단하기</h2>
+  <p>수업 중 우리 반이 설문 폼에 제출한 응답을 떠올려 봅시다. 이 데이터는 응답한 학생의 것일까요, 학교의 것일까요, 설문 서비스를 만든 기업의 것일까요? 교과서 39쪽의 질문을 우리 상황에 적용해, 각자 하나를 고르고 이유를 한 줄로 적습니다.</p>
+  <div class="callout ask">
+    <div class="h">🤔 의견 나누고 판단하기</div>
+    <ul>
+      <li>우리 반의 설문 응답은 누구의 것이라고 생각하나요? 자신의 선택과 이유를 한 줄로 적습니다.<textarea class="answer-in" rows="1" placeholder="여기에 답을 적습니다" aria-label="답 1"></textarea></li>
+      <li>우리 반의 설문 응답으로 만든 앱을 다른 학교에도 공개하려고 합니다. 누구에게 무엇을 확인해야 할까요?<textarea class="answer-in" rows="1" placeholder="여기에 답을 적습니다" aria-label="답 2"></textarea></li>
+    </ul>
+  </div>
+  <p>서로의 의견을 비교한 뒤 모둠의 판단과 근거를 발표합니다. 의견이 갈렸다면 어떤 점에서 판단이 달랐는지도 함께 설명합니다.</p>
+  <details class="glossary"><summary>더 알아보기 — 데이터 과학으로 사회 문제 해결하기(교과서 36·37쪽)</summary><div class="gin">
+  <div class="tbquote">
+    <div class="h">📖 교과서 읽기 <span class="src">『데이터 과학』 36쪽</span></div>
+    <p class="q">"세계 연합(UN)은 전 세계 빈곤을 종식시키고, 지구를 보호하며, 2030년까지 모든 사람들이 평화와 번영을 누릴 수 있는 지속 가능한 미래를 만들기 위한 17개의 지속 가능 발전 목표(SDGs: Sustainable Development Goals)를 제시하였다." <span class="src">(36쪽)</span></p>
+    <p class="t">데이터는 문제를 일으키기도 하지만, 기후·건강·교통 등 여러 분야의 문제를 <b>진단하고 해결하는</b> 도구가 되기도 합니다.</p>
+  </div>
+  <p>교과서 37쪽 ‘조사하기 ①’에서는 지속 가능한 미래를 위해 데이터 과학을 활용한 사례를 찾아봅니다. 어떤 문제를 해결하려 했는지, 어떤 데이터를 사용했는지, 무엇을 이루었고 어떤 한계가 남았는지 함께 정리합니다. 데이터를 활용했다는 사실만으로 좋은 결과가 보장되지는 않습니다.</p>
+  </div></details>
+
+  <h2>5. 데이터 윤리 실천 기준 정리하기</h2>
+  <p>데이터 윤리는 수집·분석·공개의 모든 단계에서 살펴야 합니다. 오늘 정리한 <b>키·출처·사람</b>을 기준으로, 데이터를 다루는 과정과 결과가 적절한지 계속 점검합니다.</p>
+  <p>공통 수업의 마지막 시간이며, 끝에서 프로젝트를 짜고 주제 후보를 고릅니다. 주제 후보를 판단할 세 가지 질문 중 <b>세 번째는 데이터 윤리에 관한 질문</b>입니다. 그때 오늘 정리한 기준을 적용합니다. 데이터가 많더라도 이 기준을 충족하지 못하면 프로젝트 주제로 삼을 수 없습니다.</p>
+
+  <h2>6. 팀 프로젝트 주제 검토하기</h2>
+  <p>공통 수업에서 익힌 도구로 팀의 질문에 답할 차례입니다. 2~3인 팀을 구성하고, 질문에 사용할 데이터 후보를 검토합니다.</p>
+  <div class="tbquote">
+    <div class="h">📖 교과서의 정의 <span class="src">『데이터 과학』 174쪽</span></div>
+    <p class="q">"데이터 과학은 다양한 분야의 문제를 해결하고 의사 결정을 지원하는 데 큰 도움이 되지만, 모든 문제를 해결할 수 있는 것은 아니다." <span class="src">(174쪽)</span></p>
+    <p class="t">→ 주제를 고를 때는 데이터가 충분한지, 질문에 답하기에 적합한지, 윤리적으로 사용할 수 있는지를 확인합니다. 세 번째 기준은 14차시의 점검 목록을 사용합니다.</p>
+  </div>
+  <p>관심 질문이 비슷한 사람끼리 팀을 구성하고, 데이터 후보 세 개를 비교합니다. 회귀·분류·군집·연관 중 어떤 방법이 적합할지도 함께 검토합니다. 프로젝트의 5주 흐름과 역할 분담은 <b>팀 프로젝트 안내</b>를 참고합니다.</p>
+  <ul>
+    <li><b>팀 구성(2~3인)</b> — 관심 질문이 비슷한 사람끼리</li>
+    <li><b>분석 방법 고르기</b> — 회귀·분류·군집·연관 중 팀의 질문에 맞는 방법은 무엇인가</li>
+    <li><b>데이터 후보 3개</b> — 각 후보를 세 가지 질문으로 판단해 보기 (교과서 176쪽 탐구활동). 윤리 판단은 이번에 세운 기준으로</li>
+  </ul>
+  <h3>팀 프로젝트 주제 카드 작성하기</h3>
+  <p>각 데이터 후보를 세 기준에 따라 <b>충족·미충족·확인 필요</b>로 판단하고, 근거를 한 줄씩 적습니다. 확인되지 않은 조건을 억지로 채우지 않습니다.</p>
+  <div style="overflow-x:auto">
+  <table class="daymap">
+    <thead><tr><th>항목</th><th>적을 것</th></tr></thead>
+    <tbody>
+      <tr><td><b>팀 구성원</b></td><td></td></tr>
+      <tr><td><b>팀의 질문</b></td><td></td></tr>
+      <tr><td><b>고려하는 분석 방법</b><br><span class="mini">회귀 · 군집 · 연관</span></td><td></td></tr>
+      <tr><td><b>데이터 후보 ①</b><br><span class="mini">이름 · 출처</span></td><td></td></tr>
+      <tr><td><span class="mini">① 세 가지 질문 판정과 근거</span></td><td></td></tr>
+      <tr><td><b>데이터 후보 ②</b><br><span class="mini">이름 · 출처</span></td><td></td></tr>
+      <tr><td><span class="mini">② 세 가지 질문 판정과 근거</span></td><td></td></tr>
+      <tr><td><b>데이터 후보 ③</b><br><span class="mini">이름 · 출처</span></td><td></td></tr>
+      <tr><td><span class="mini">③ 세 가지 질문 판정과 근거</span></td><td></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout ask">
+    <div class="h">❓ 제출 전 확인하기</div>
+    <ul>
+      <li>질문에 답하려면 어떤 표가 필요한가요? 한 행은 무엇을 나타내나요?</li>
+      <li>세 후보 중 무엇이 가장 적합한가요? 데이터의 양과 질문에 필요한 내용을 함께 설명합니다.</li>
+      <li>공개된 데이터를 활용하나요, 직접 수집하나요? 윤리적으로 더 확인할 조건은 무엇인가요?</li>
+    </ul>
+  </div>
+
+
+  <h2>7. 확인 문제</h2>
+  <div class="quiz">
+    <div class="qq"><span class="qn">문제 1</span> 수업에서 사용한 급식 식단 데이터는 전체를 내려받아 공개 앱으로 만들었습니다. 하지만 개인의 위치 기록을 같은 방식으로 공개하면 위험할 수 있습니다. 두 데이터의 민감도를 판단하는 핵심 기준은 무엇일까요? 답을 고른 뒤 그 이유를 자기 말로 설명해 봅니다.</div>
+    <div class="qitem">
+      <div class="qopts qopts-col">
+        <button class="opt">누구나 내려받을 수 있게 공개된 데이터인가 아닌가</button>
+        <button class="opt">데이터의 행 수와 열 수가 얼마나 많은가</button>
+        <button class="opt" data-ok="1">다른 정보와 결합해 개인을 알아볼 수 있는가</button>
+      </div>
+      <div class="fb">수업에서 사용한 급식 식단에는 개인별 섭취 기록이 없습니다. 반면 한 사람의 이동 기록을 다른 정보와 쉽게 결합해 누구의 기록인지 알아볼 수 있다면 개인정보에 해당합니다. 중요한 것은 데이터의 형식이나 공개 여부가 아니라, 특정 개인을 알아볼 수 있는지입니다.</div>
+    </div>
+    <details class="reveal"><summary>예시 답안 확인하기</summary>
+      <p>수업에서 사용한 급식 식단에는 개인별 섭취 기록이 없습니다. 반면 개인의 이동 기록은 다른 정보와 쉽게 결합해 누구의 것인지 알아볼 수 있는 경우가 있습니다. 따라서 이름이 있는지만 볼 것이 아니라, 다른 정보와 결합했을 때 특정 개인을 알아볼 수 있는지를 기준으로 비교해야 합니다.</p>
+    </details>
+  </div>
+  <div class="quiz">
+    <div class="qq"><span class="qn">문제 2</span> 비공개용 API 키를 코드에 적은 채 공개 저장소에 올리면 안 되는 이유를 두 가지 적습니다.</div>
+    <details class="reveal"><summary>예시 답안 확인하기</summary>
+      <p>① 다른 사람이 공개된 키의 권한으로 API를 사용할 수 있습니다. ② 그 과정에서 호출 한도가 소진되거나 허용된 기능이 오용될 수 있습니다. 비공개용 키는 코드와 분리해 보관하고, 유출되면 폐기한 뒤 새로 발급받습니다. 공개용 키도 종류와 접근 권한 설정을 확인해야 합니다.</p>
+    </details>
+  </div>
+  <div class="quiz">
+    <div class="qq"><span class="qn">문제 3</span> 영화 관객 수를 예측하는 모델을 "좋은 영화를 가려내는 모델"이라고 소개하면 왜 문제가 될까요?</div>
+    <div class="qitem">
+      <div class="qopts qopts-col">
+        <button class="opt">스크린 수는 관객 수를 예측하는 데 도움이 되지 않는 변수이기 때문</button>
+        <button class="opt">변수를 하나 더 넣으면 모델의 정확도가 반드시 낮아지기 때문</button>
+        <button class="opt" data-ok="1">관객 수가 많은 것과 영화가 좋은 것은 서로 다른 평가이기 때문</button>
+      </div>
+      <div class="fb">관객 수를 예측하는 일과 영화의 가치를 평가하는 일은 다릅니다. 또 스크린을 많이 받은 영화의 기록으로 학습한 모델의 예측을 다음 배정에 다시 사용하면, 처음의 치우침이 반복될 수 있습니다. 이는 치우친 데이터로 만든 모델이 특정 대상에게 불리하게 작동할 수 있다는 데이터 편향성 문제와 연결됩니다(교과서 38쪽).</div>
+    </div>
+  </div>
+
+  <h2>🎒 오늘의 학습 점검</h2>
+  <ul class="checklist">
+    <li>데이터 편향성·혐오 표현·데이터 소유권이 각각 어떤 문제인지 구분해 설명할 수 있습니다.</li>
+    <li>앱을 공개하기 전에 키·출처·사람에 미치는 영향을 점검할 수 있습니다.</li>
+    <li>급식 식단과 개인 위치 기록의 민감도가 왜 다른지 설명할 수 있습니다.</li>
+    <li>우리 반의 설문 응답을 누구의 것으로 볼지 모둠에서 토의하고 판단의 근거를 설명했습니다.</li>
+    <li>다음 시간에 프로젝트 주제 후보를 고를 때 적용할 데이터 윤리 기준을 정리했습니다.</li>
+  </ul>
+
+  <h2>📚 오늘의 용어</h2>
+  <table class="glossary-table">
+    <tr><th>용어</th><th>뜻</th></tr>
+    <tr><td class="term">데이터 편향성</td><td>데이터의 분포가 특정 지역·연령·성별 등에 치우쳐 있는 상태입니다. 이러한 치우침은 모델의 결과에도 이어질 수 있습니다.</td></tr>
+    <tr><td class="term">데이터 소유권</td><td>생성된 데이터를 누구의 것으로 볼지에 관한 문제입니다. 수업 중 만든 데이터라면 학생·학교·기업 등의 관계를 함께 살펴봅니다.</td></tr>
+    <tr><td class="term">개인정보</td><td>살아 있는 개인에 관한 정보로, 그 정보만으로 또는 다른 정보와 쉽게 결합하여 개인을 알아볼 수 있는 정보 등을 말합니다(개인정보 보호법 제2조).</td></tr>
+    <tr><td class="term">인증키(API 키)</td><td>앱이나 프로젝트가 API에 접근할 때 사용하는 값입니다. 공개할 수 있는지, 어떤 권한이 있는지는 키의 종류와 서비스에 따라 다릅니다.</td></tr>
+    <tr><td class="term">SDGs</td><td>UN이 제시한 17개의 지속 가능 발전 목표입니다. 데이터 과학은 이 목표와 관련된 문제를 진단하고 해결하는 데 활용됩니다.</td></tr>
+  </table>
+
+</main>
+</div>
+
+<footer class="foot">송탄고등학교 · 데이터 과학 · 학생용 교재</footer>
+<script src="assets/copy.js"></script>
+<script src="assets/check.js"></script>
+<script src="assets/quiz.js"></script>
+<script src="assets/lesson14.js"></script>
+<script src="assets/widgets14.js"></script>
+<script src="assets/answer.js?v=3"></script>
+</body>
+</html>
